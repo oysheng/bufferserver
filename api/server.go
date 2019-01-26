@@ -63,12 +63,11 @@ func setupRouter(apiServer *Server) {
 	r := gin.Default()
 	r.Use(apiServer.Middleware())
 	r.HEAD("/dapp", handlerMiddleware(apiServer.Head))
-	v1 := r.Group("/dapp/:btm")
-
-	v1.POST("/q/list-utxos", handlerMiddleware(apiServer.ListUtxos))
-	v1.POST("/q/list-balances", handlerMiddleware(apiServer.ListBalances))
-	//v1.POST("/q/update-utxo", handlerMiddleware(apiServer.UpdateUtxo))
-	//v1.POST("/q/update-balance", handlerMiddleware(apiServer.UpdateBalance))
+	v1 := r.Group("/dapp")
+	v1.POST("/list-utxos", handlerMiddleware(apiServer.ListUtxos))
+	v1.POST("/list-balances", handlerMiddleware(apiServer.ListBalances))
+	//v1.POST("/update-utxo", handlerMiddleware(apiServer.UpdateUtxo))
+	//v1.POST("/update-balance", handlerMiddleware(apiServer.UpdateBalance))
 
 	apiServer.engine = r
 }
