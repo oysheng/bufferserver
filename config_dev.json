@@ -1,0 +1,70 @@
+{
+    "gin-gonic": {
+        "listening_port": 3000,
+        "is_release_mode": false
+    },
+    "mysql": {
+        "master": {
+            "host": "52.82.31.236",
+            "port": 3306,
+            "username": "root",
+            "password": "c%wtyz&Kq5nB",
+            "database": "blockcenter"
+        },
+        "slaves": [
+            {
+                "host": "52.82.31.236",
+                "port": 3306,
+                "username": "root",
+                "password": "c%wtyz&Kq5nB",
+                "database": "blockcenter"
+            },
+            {
+                "host": "52.82.31.236",
+                "port": 3306,
+                "username": "root",
+                "password": "c%wtyz&Kq5nB",
+                "database": "blockcenter"
+            }
+        ],
+        "log_mode": true
+    },
+    "redis": {
+        "endpoint": "52.82.31.236:6379",
+        "pool_size": 10,
+        "database": 0,
+        "password": "block12345",
+        "cache_seconds": 600,
+        "long_cache_hours": 24
+    },
+    "api":{
+        "mysql_conns":{
+            "max_open_conns": 20,
+            "max_idle_conns": 10
+        }
+    },
+    "updater": {
+        "sync_seconds": 5,
+        "ws_address": "52.82.31.236:9888",
+        "market": {
+            "sync_seconds": 60,
+            "price_server_url": "http://marketapi.blockmeta.com",
+            "exchange_rate_server_url": "https://app.blockmeta.com"
+        },
+        "mysql_conns":{
+            "max_open_conns": 5,
+            "max_idle_conns": 5
+        }
+    },
+    "coin": {
+        "btm": {
+            "network": "wisdom",
+            "desired_utxo_count": 5,
+            "reserve_seconds": 600,
+            "upstream": {
+                "url": "http://52.82.31.236:9888",
+                "timeout": "10s"
+            }
+        }
+    }
+}

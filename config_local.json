@@ -1,0 +1,30 @@
+{
+  "gin-gonic": {
+    "listening_port": 3000,
+    "is_release_mode": false
+  },
+  "mysql": {
+    "master": {
+      "host": "127.0.0.1",
+      "port": 3306,
+      "username": "root",
+      "password": "yang",
+      "database": "deposit"
+    },
+    "log_mode": true
+  },
+  "redis": {
+    "endpoint": "52.82.31.236:6379",
+    "pool_size": 10,
+    "database": 6,
+    "password": "block12345",
+    "cache_seconds": 600,
+    "long_cache_hours": 24
+  },
+  "api":{
+    "mysql_conns":{
+      "max_open_conns": 20,
+      "max_idle_conns": 10
+    }
+  }
+}
