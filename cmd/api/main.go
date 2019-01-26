@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/blockcenter/api"
-	"github.com/blockcenter/config"
+	"github.com/bufferserver/api"
+	"github.com/bufferserver/config"
 )
 
 func main() {

@@ -3,7 +3,7 @@ package common
 import (
 	"github.com/bytom/errors"
 
-	"github.com/blockcenter/types"
+	"github.com/bufferserver/types"
 )
 
 //FormatErrResp format error response

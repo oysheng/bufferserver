@@ -4,8 +4,8 @@ import (
 	"github.com/bytom/errors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/blockcenter/api/common"
-	"github.com/blockcenter/database/orm"
+	"github.com/bufferserver/api/common"
+	"github.com/bufferserver/database/orm"
 )
 
 type ListBalanceReq struct {

@@ -6,9 +6,9 @@ package main
 //
 //	log "github.com/sirupsen/logrus"
 //
-//	"github.com/blockcenter/config"
-//	"github.com/blockcenter/database"
-//	"github.com/blockcenter/service"
+//	"github.com/bufferserver/config"
+//	"github.com/bufferserver/database"
+//	"github.com/bufferserver/service"
 //)
 //
 //func main() {

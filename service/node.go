@@ -7,7 +7,7 @@ import (
 	"github.com/bytom/protocol/bc"
 	"github.com/bytom/protocol/bc/types"
 
-	"github.com/blockcenter/util"
+	"github.com/bufferserver/util"
 )
 
 // Node can invoke the api which provide by the full node server

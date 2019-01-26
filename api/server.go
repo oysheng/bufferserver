@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/blockcenter/api/common"
-	"github.com/blockcenter/config"
-	"github.com/blockcenter/database"
+	"github.com/bufferserver/api/common"
+	"github.com/bufferserver/config"
+	"github.com/bufferserver/database"
 )
 
 type Server struct {

@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"github.com/blockcenter/types"
+	"github.com/bufferserver/types"
 	"time"
 )
 
