@@ -23,6 +23,23 @@ CREATE SCHEMA IF NOT EXISTS `deposit`;
 
 USE `deposit`;
 
+# Dump of table bases
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `bases`;
+
+CREATE TABLE `bases` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `asset_id` char(64) NOT NULL,
+  `control_program` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `asset_id` (`asset_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `bases` WRITE;
+UNLOCK TABLES;
+
+
 # Dump of table balances
 # ------------------------------------------------------------
 

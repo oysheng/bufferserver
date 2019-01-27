@@ -1,10 +1,10 @@
 package api
 
 import (
+	"github.com/bufferserver/api/common"
 	"github.com/bytom/errors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/bufferserver/api/common"
 	"github.com/bufferserver/database/orm"
 )
 
@@ -22,34 +22,22 @@ func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) (*orm.Balance
 	return balance, nil
 }
 
-type ListUTXOReq struct {
-	common.Display
-}
-
-type AttachUtxo struct {
+type ListUTXOsResp struct {
 	Hash   string `json:"hash"`
 	Asset  string `json:"asset"`
 	Amount uint64 `json:"amount"`
 }
 
-func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOReq, page *common.PaginationQuery) ([]*AttachUtxo, error) {
-	utxo := &orm.Utxo{}
-	if asset, err := req.GetFilterString("asset"); err == nil {
-		utxo.AssetID = asset
-	}
-
-	if cp, err := req.GetFilterString("program"); err == nil {
-		utxo.ControlProgram = cp
-	}
-
+func (s *Server) ListUtxos(c *gin.Context, req *common.AssetProgram) ([]*ListUTXOsResp, error) {
+	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
 	if err := s.db.Master().Where(utxo).Find(&utxos).Error; err != nil {
 		return nil, err
 	}
 
-	var result []*AttachUtxo
+	var result []*ListUTXOsResp
 	for _, u := range utxos {
-		result = append(result, &AttachUtxo{
+		result = append(result, &ListUTXOsResp{
 			Hash:   u.Hash,
 			Asset:  u.AssetID,
 			Amount: u.Amount,

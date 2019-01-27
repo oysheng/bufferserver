@@ -9,6 +9,11 @@ var (
 	errInvalidFilterType = errors.New("invalid filter type")
 )
 
+type AssetProgram struct {
+	Asset   string `json:"asset"`
+	Program string `json:"program"`
+}
+
 // Display define how the data is displayed
 type Display struct {
 	Filter map[string]interface{} `json:"filter"`

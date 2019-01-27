@@ -35,6 +35,7 @@ type Config struct {
 	MySQL    MySQL    `json:"mysql"`
 	Redis    Redis    `json:"redis"`
 	API      API      `json:"api"`
+	Updater  Updater  `json:"updater"`
 }
 
 type GinGonic struct {
@@ -70,5 +71,11 @@ type MySQLConnCfg struct {
 }
 
 type API struct {
+	MySQLConnCfg MySQLConnCfg `json:"mysql_conns"`
+}
+
+type Updater struct {
+	SyncSeconds  int          `json:"sync_seconds"`
+	URL          string       `json:"url"`
 	MySQLConnCfg MySQLConnCfg `json:"mysql_conns"`
 }

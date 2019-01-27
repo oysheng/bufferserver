@@ -64,6 +64,7 @@ func setupRouter(apiServer *Server) {
 	r.Use(apiServer.Middleware())
 	r.HEAD("/dapp", handlerMiddleware(apiServer.Head))
 	v1 := r.Group("/dapp")
+	v1.POST("/update-base", handlerMiddleware(apiServer.UpdateBase))
 	v1.POST("/list-utxos", handlerMiddleware(apiServer.ListUtxos))
 	v1.POST("/list-balances", handlerMiddleware(apiServer.ListBalances))
 	//v1.POST("/update-utxo", handlerMiddleware(apiServer.UpdateUtxo))
