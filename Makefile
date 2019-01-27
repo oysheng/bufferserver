@@ -11,10 +11,7 @@ test:
 	@echo "Running go test"
 	@go test $(PACKAGES)
 
-intergation:
-	@go run test/main.go config_travis.json
-
-ci: test intergation
+ci: test
 
 clean:
 	rm -f target/updater
