@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/bufferserver/api/common"
 	"github.com/bytom/errors"
 	"github.com/gin-gonic/gin"
 
+	"github.com/bufferserver/api/common"
 	"github.com/bufferserver/database/orm"
 )
 
@@ -31,7 +31,7 @@ type ListUTXOsResp struct {
 func (s *Server) ListUtxos(c *gin.Context, req *common.AssetProgram) ([]*ListUTXOsResp, error) {
 	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
-	if err := s.db.Master().Where(utxo).Find(&utxos).Error; err != nil {
+	if err := s.db.Master().Where(utxo).Find(&utxos).Where("is_locked = false").Error; err != nil {
 		return nil, err
 	}
 

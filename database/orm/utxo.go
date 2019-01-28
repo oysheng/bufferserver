@@ -2,7 +2,6 @@ package orm
 
 import (
 	"github.com/bufferserver/types"
-	"time"
 )
 
 type Utxo struct {
@@ -10,10 +9,9 @@ type Utxo struct {
 	Hash           string
 	AssetID        string
 	Amount         uint64
-	SourceID       string
-	SourcePos      uint64
 	ControlProgram string
 	IsSpend        bool
+	IsLocked       bool
 	SubmitTime     types.Timestamp
-	Duration       time.Duration
+	Duration       uint64
 }

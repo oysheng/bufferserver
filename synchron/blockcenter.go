@@ -12,9 +12,10 @@ import (
 	"github.com/bufferserver/database"
 	"github.com/bufferserver/database/orm"
 	"github.com/bufferserver/service"
+	"github.com/bufferserver/types"
 )
 
-func BlockKeeper(cfg *config.Config, db *gorm.DB, cache *database.RedisDB, node *service.Node, duration time.Duration) {
+func BlockCenterKeeper(cfg *config.Config, db *gorm.DB, cache *database.RedisDB, node *service.Node, duration time.Duration) {
 	ticker := time.NewTicker(duration)
 	for ; true; <-ticker.C {
 		if err := syncBlockCenter(db, cache, node); err != nil {
@@ -36,12 +37,26 @@ func syncBlockCenter(db *gorm.DB, cache *database.RedisDB, node *service.Node) e
 		req := &common.Display{Filter: filter}
 		resUTXOs, err := node.ListBlockCenterUTXOs(req)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "list blockcenter utxos")
 		}
 
 		for _, utxo := range resUTXOs {
-			if err := db.Save(utxo).Error; err != nil {
-				return errors.Wrap(err, "update utxo")
+			u := orm.Utxo{Hash: utxo.Hash}
+			if err := db.Where(u).First(&u).Error; err != nil && err != gorm.ErrRecordNotFound {
+				return errors.Wrap(err, "query utxo")
+			} else if err == gorm.ErrRecordNotFound {
+				butxo := &orm.Utxo{Hash: utxo.Hash, AssetID: utxo.Asset, Amount: utxo.Amount, ControlProgram: base.ControlProgram, IsSpend: false, IsLocked: false, Duration: uint64(60)}
+				if err := db.Save(butxo).Error; err != nil {
+					return errors.Wrap(err, "save utxo")
+				}
+				continue
+			}
+
+			currentTime := time.Now()
+			if (u.SubmitTime != types.Timestamp{}) && (currentTime.Unix()-u.SubmitTime.Unix()) > int64(u.Duration) {
+				if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: utxo.Hash}).Update("is_locked", false).Error; err != nil {
+					return errors.Wrap(err, "update utxo unlocked")
+				}
 			}
 		}
 	}

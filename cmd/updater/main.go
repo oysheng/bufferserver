@@ -26,7 +26,7 @@ func main() {
 
 	node := service.NewNode(cfg.Updater.URL)
 	blockSyncFreq := time.Duration(cfg.Updater.SyncSeconds) * time.Second
-	go synchron.BlockKeeper(cfg, db.Master(), cache, node, blockSyncFreq)
+	go synchron.BlockCenterKeeper(cfg, db.Master(), cache, node, blockSyncFreq)
 
 	// keep the main func running in case of terminating goroutines
 	var wg sync.WaitGroup
