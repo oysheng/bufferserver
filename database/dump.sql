@@ -72,7 +72,7 @@ CREATE TABLE `utxos` (
   `control_program` text NOT NULL,
   `is_spend` tinyint(1) DEFAULT '0',
   `is_locked` tinyint(1) DEFAULT '0',
-  `submitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `submit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `duration` bigint(20) unsigned DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `hash` (`hash`)

@@ -18,13 +18,13 @@ func NewNode(url string) *Node {
 	return &Node{url: url}
 }
 
-type attachUtxo struct {
+type AttachUtxo struct {
 	Hash   string `json:"hash"`
 	Asset  string `json:"asset"`
 	Amount uint64 `json:"amount"`
 }
 
-func (n *Node) ListBlockCenterUTXOs(req *common.Display) ([]*attachUtxo, error) {
+func (n *Node) ListBlockCenterUTXOs(req *common.Display) ([]*AttachUtxo, error) {
 	url := "/api/v1/btm/q/list-utxos"
 	payload, err := json.Marshal(req)
 	if err != nil {
@@ -41,7 +41,7 @@ func (n *Node) ListBlockCenterUTXOs(req *common.Display) ([]*attachUtxo, error) 
 		return nil, err
 	}
 
-	var res []*attachUtxo
+	var res []*AttachUtxo
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}

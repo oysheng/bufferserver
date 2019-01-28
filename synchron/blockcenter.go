@@ -12,7 +12,6 @@ import (
 	"github.com/bufferserver/database"
 	"github.com/bufferserver/database/orm"
 	"github.com/bufferserver/service"
-	"github.com/bufferserver/types"
 )
 
 func BlockCenterKeeper(cfg *config.Config, db *gorm.DB, cache *database.RedisDB, node *service.Node, duration time.Duration) {
@@ -40,24 +39,47 @@ func syncBlockCenter(db *gorm.DB, cache *database.RedisDB, node *service.Node) e
 			return errors.Wrap(err, "list blockcenter utxos")
 		}
 
-		for _, utxo := range resUTXOs {
-			u := orm.Utxo{Hash: utxo.Hash}
-			if err := db.Where(u).First(&u).Error; err != nil && err != gorm.ErrRecordNotFound {
-				return errors.Wrap(err, "query utxo")
-			} else if err == gorm.ErrRecordNotFound {
-				butxo := &orm.Utxo{Hash: utxo.Hash, AssetID: utxo.Asset, Amount: utxo.Amount, ControlProgram: base.ControlProgram, IsSpend: false, IsLocked: false, Duration: uint64(60)}
-				if err := db.Save(butxo).Error; err != nil {
-					return errors.Wrap(err, "save utxo")
-				}
-				continue
-			}
+		if err := UpdateOrSaveUTXO(db, base.ControlProgram, resUTXOs); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
-			currentTime := time.Now()
-			if (u.SubmitTime != types.Timestamp{}) && (currentTime.Unix()-u.SubmitTime.Unix()) > int64(u.Duration) {
-				if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: utxo.Hash}).Update("is_locked", false).Error; err != nil {
-					return errors.Wrap(err, "update utxo unlocked")
-				}
+func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo) error {
+	utxoMap := make(map[string]*orm.Utxo)
+	for _, butxo := range bcUTXOs {
+		utxo := orm.Utxo{Hash: butxo.Hash}
+		utxoMap[butxo.Hash] = &utxo
+		if err := db.Where(utxo).First(&utxo).Error; err != nil && err != gorm.ErrRecordNotFound {
+			return errors.Wrap(err, "query utxo")
+		} else if err == gorm.ErrRecordNotFound {
+			butxo := &orm.Utxo{Hash: butxo.Hash, AssetID: butxo.Asset, Amount: butxo.Amount, ControlProgram: program, IsSpend: false, IsLocked: false, Duration: uint64(60)}
+			if err := db.Save(butxo).Error; err != nil {
+				return errors.Wrap(err, "save utxo")
 			}
+			continue
+		}
+
+		if time.Now().Unix()-utxo.SubmitTime.Unix() > int64(utxo.Duration) {
+			if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Update("is_locked", false).Error; err != nil {
+				return errors.Wrap(err, "update utxo unlocked")
+			}
+		}
+	}
+
+	var utxos []*orm.Utxo
+	if err := db.Model(&orm.Utxo{}).Where("is_spend = false").Find(&utxos).Error; err != nil {
+		return errors.Wrap(err, "list unspent utxos")
+	}
+
+	for _, utxo := range utxos {
+		if _, ok := utxoMap[utxo.Hash]; ok {
+			continue
+		}
+
+		if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: utxo.Hash}).Update("is_spend", true).Error; err != nil {
+			return errors.Wrap(err, "update utxo spent")
 		}
 	}
 	return nil
