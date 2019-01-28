@@ -13,13 +13,23 @@ type ListBalanceReq struct {
 	AssetID string `json:"asset"`
 }
 
-func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) (*orm.Balance, error) {
+type ListBalanceResp struct {
+	Address string `json:"address"`
+	AssetID string `json:"asset"`
+	Amount  uint64 `json:"amount"`
+}
+
+func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) (*ListBalanceResp, error) {
 	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID}
 	if err := s.db.Master().Where(balance).First(balance).Error; err != nil {
 		return nil, errors.Wrap(err, "db query balance")
 	}
 
-	return balance, nil
+	return &ListBalanceResp{
+		Address: balance.Address,
+		AssetID: balance.AssetID,
+		Amount:  balance.Balance,
+	}, nil
 }
 
 type ListUTXOsResp struct {
