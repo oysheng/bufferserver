@@ -54,17 +54,28 @@ func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo
 		if err := db.Where(utxo).First(&utxo).Error; err != nil && err != gorm.ErrRecordNotFound {
 			return errors.Wrap(err, "query utxo")
 		} else if err == gorm.ErrRecordNotFound {
-			butxo := &orm.Utxo{Hash: butxo.Hash, AssetID: butxo.Asset, Amount: butxo.Amount, ControlProgram: program, IsSpend: false, IsLocked: false, Duration: uint64(60)}
+			butxo := &orm.Utxo{
+				Hash:           butxo.Hash,
+				AssetID:        butxo.Asset,
+				Amount:         butxo.Amount,
+				ControlProgram: program,
+				IsSpend:        false,
+				IsLocked:       false,
+				Duration:       uint64(60),
+			}
+
 			if err := db.Save(butxo).Error; err != nil {
 				return errors.Wrap(err, "save utxo")
 			}
 			continue
 		}
 
-		if time.Now().Unix()-utxo.SubmitTime.Unix() > int64(utxo.Duration) {
-			if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Update("is_locked", false).Error; err != nil {
-				return errors.Wrap(err, "update utxo unlocked")
-			}
+		if time.Now().Unix()-utxo.SubmitTime.Unix() < int64(utxo.Duration) {
+			continue
+		}
+
+		if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Update("is_locked", false).Error; err != nil {
+			return errors.Wrap(err, "update utxo unlocked")
 		}
 	}
 
