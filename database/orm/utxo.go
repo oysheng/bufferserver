@@ -1,8 +1,6 @@
 package orm
 
-import (
-	"github.com/bufferserver/types"
-)
+import "time"
 
 type Utxo struct {
 	ID             uint64
@@ -12,6 +10,6 @@ type Utxo struct {
 	ControlProgram string
 	IsSpend        bool
 	IsLocked       bool
-	SubmitTime     types.Timestamp
+	SubmitTime     *time.Time
 	Duration       uint64
 }

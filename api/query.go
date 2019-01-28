@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/bytom/errors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/bufferserver/api/common"
@@ -13,23 +12,13 @@ type ListBalanceReq struct {
 	AssetID string `json:"asset"`
 }
 
-type ListBalanceResp struct {
-	Address string `json:"address"`
-	AssetID string `json:"asset"`
-	Amount  uint64 `json:"amount"`
-}
-
-func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) (*ListBalanceResp, error) {
+func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) ([]*orm.Balance, error) {
+	var balances []*orm.Balance
 	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID}
-	if err := s.db.Master().Where(balance).First(balance).Error; err != nil {
-		return nil, errors.Wrap(err, "db query balance")
+	if err := s.db.Master().Model(&orm.Balance{}).Where(balance).Find(&balances).Error; err != nil {
+		return nil, err
 	}
-
-	return &ListBalanceResp{
-		Address: balance.Address,
-		AssetID: balance.AssetID,
-		Amount:  balance.Balance,
-	}, nil
+	return balances, nil
 }
 
 type ListUTXOsResp struct {

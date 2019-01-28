@@ -49,9 +49,9 @@ CREATE TABLE `balances` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `address` varchar(256) NOT NULL,
   `asset_id` char(64) NOT NULL,
-  `balance` bigint(20) unsigned DEFAULT '0',
+  `amount` int(19) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `address` (`address`,`asset_id`),
+  KEY `address` (`address`),
   KEY `asset_id` (`asset_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

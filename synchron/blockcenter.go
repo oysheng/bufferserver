@@ -54,7 +54,7 @@ func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo
 		if err := db.Where(utxo).First(&utxo).Error; err != nil && err != gorm.ErrRecordNotFound {
 			return errors.Wrap(err, "query utxo")
 		} else if err == gorm.ErrRecordNotFound {
-			butxo := &orm.Utxo{
+			utxo := &orm.Utxo{
 				Hash:           butxo.Hash,
 				AssetID:        butxo.Asset,
 				Amount:         butxo.Amount,
@@ -64,7 +64,7 @@ func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo
 				Duration:       uint64(60),
 			}
 
-			if err := db.Save(butxo).Error; err != nil {
+			if err := db.Save(utxo).Error; err != nil {
 				return errors.Wrap(err, "save utxo")
 			}
 			continue
