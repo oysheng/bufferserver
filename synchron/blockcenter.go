@@ -8,22 +8,20 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/bufferserver/api/common"
-	"github.com/bufferserver/config"
-	"github.com/bufferserver/database"
 	"github.com/bufferserver/database/orm"
 	"github.com/bufferserver/service"
 )
 
-func BlockCenterKeeper(cfg *config.Config, db *gorm.DB, cache *database.RedisDB, node *service.Node, duration time.Duration) {
+func BlockCenterKeeper(db *gorm.DB, node *service.Node, duration time.Duration) {
 	ticker := time.NewTicker(duration)
 	for ; true; <-ticker.C {
-		if err := syncBlockCenter(db, cache, node); err != nil {
+		if err := syncBlockCenter(db, node); err != nil {
 			log.WithField("err", err).Errorf("fail on blockcenter")
 		}
 	}
 }
 
-func syncBlockCenter(db *gorm.DB, cache *database.RedisDB, node *service.Node) error {
+func syncBlockCenter(db *gorm.DB, node *service.Node) error {
 	var bases []*orm.Base
 	if err := db.Find(&bases).Error; err != nil {
 		return errors.Wrap(err, "query bases")
