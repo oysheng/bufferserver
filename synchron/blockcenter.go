@@ -45,10 +45,10 @@ func syncBlockCenter(db *gorm.DB, node *service.Node) error {
 }
 
 func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo) error {
-	utxoMap := make(map[string]*orm.Utxo)
+	utxoMap := make(map[string]bool)
 	for _, butxo := range bcUTXOs {
 		utxo := orm.Utxo{Hash: butxo.Hash}
-		utxoMap[butxo.Hash] = &utxo
+		utxoMap[butxo.Hash] = true
 		if err := db.Where(utxo).First(&utxo).Error; err != nil && err != gorm.ErrRecordNotFound {
 			return errors.Wrap(err, "query utxo")
 		} else if err == gorm.ErrRecordNotFound {
