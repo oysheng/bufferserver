@@ -37,14 +37,14 @@ func syncBlockCenter(db *gorm.DB, node *service.Node) error {
 			return errors.Wrap(err, "list blockcenter utxos")
 		}
 
-		if err := UpdateOrSaveUTXO(db, base.ControlProgram, resUTXOs); err != nil {
+		if err := UpdateOrSaveUTXO(db, base.AssetID, base.ControlProgram, resUTXOs); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo) error {
+func UpdateOrSaveUTXO(db *gorm.DB, asset string, program string, bcUTXOs []*service.AttachUtxo) error {
 	utxoMap := make(map[string]bool)
 	for _, butxo := range bcUTXOs {
 		utxo := orm.Utxo{Hash: butxo.Hash}
@@ -77,12 +77,8 @@ func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo
 		}
 	}
 
-	if len(bcUTXOs) == 0 {
-		return nil
-	}
-
 	var utxos []*orm.Utxo
-	if err := db.Model(&orm.Utxo{AssetID: bcUTXOs[0].Asset, ControlProgram: program}).Where("is_spend = false").Find(&utxos).Error; err != nil {
+	if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{AssetID: asset, ControlProgram: program, IsSpend: false}).Find(&utxos).Error; err != nil {
 		return errors.Wrap(err, "list unspent utxos")
 	}
 
