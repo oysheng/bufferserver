@@ -77,8 +77,12 @@ func UpdateOrSaveUTXO(db *gorm.DB, program string, bcUTXOs []*service.AttachUtxo
 		}
 	}
 
+	if len(bcUTXOs) == 0 {
+		return nil
+	}
+
 	var utxos []*orm.Utxo
-	if err := db.Model(&orm.Utxo{}).Where("is_spend = false").Find(&utxos).Error; err != nil {
+	if err := db.Model(&orm.Utxo{AssetID: bcUTXOs[0].Asset, ControlProgram: program}).Where("is_spend = false").Find(&utxos).Error; err != nil {
 		return errors.Wrap(err, "list unspent utxos")
 	}
 
