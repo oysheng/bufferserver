@@ -23,8 +23,7 @@ func RespondErrorResp(c *gin.Context, err error) {
 		"request": c.Value(ReqBodyLabel),
 		"err":     err,
 	}).Error("request fail")
-	resp := formatErrResp(err)
-	c.AbortWithStatusJSON(http.StatusOK, resp)
+	c.AbortWithStatusJSON(http.StatusOK, Response{Code: 300, Msg: err.Error()})
 }
 
 func RespondSuccessResp(c *gin.Context, data interface{}) {

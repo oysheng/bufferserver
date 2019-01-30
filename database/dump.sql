@@ -50,6 +50,7 @@ CREATE TABLE `balances` (
   `address` varchar(256) NOT NULL,
   `asset_id` char(64) NOT NULL,
   `amount` int(19) DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `address` (`address`),
   KEY `asset_id` (`asset_id`)
