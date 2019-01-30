@@ -34,7 +34,7 @@ func (s *Server) ListUtxos(c *gin.Context, req *common.AssetProgram) ([]*ListUTX
 		return nil, err
 	}
 
-	var result []*ListUTXOsResp
+	result := []*ListUTXOsResp{}
 	for _, u := range utxos {
 		result = append(result, &ListUTXOsResp{
 			Hash:   u.Hash,
