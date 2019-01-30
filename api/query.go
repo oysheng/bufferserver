@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 
 	"github.com/bufferserver/api/common"
@@ -21,16 +22,26 @@ func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) ([]*orm.Balan
 	return balances, nil
 }
 
+type ListUTXOsReq struct {
+	common.AssetProgram
+	Sorter common.Sorter `json:"sort"`
+}
+
 type ListUTXOsResp struct {
 	Hash   string `json:"hash"`
 	Asset  string `json:"asset"`
 	Amount uint64 `json:"amount"`
 }
 
-func (s *Server) ListUtxos(c *gin.Context, req *common.AssetProgram) ([]*ListUTXOsResp, error) {
+func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.PaginationQuery) ([]*ListUTXOsResp, error) {
 	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
-	if err := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = false").Find(&utxos).Error; err != nil {
+	query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = false")
+	if req.Sorter.By == "amount" {
+		query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
+	}
+
+	if err := query.Offset(page.Start).Limit(page.Limit).Find(&utxos).Error; err != nil {
 		return nil, err
 	}
 
