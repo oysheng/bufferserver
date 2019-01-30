@@ -72,13 +72,13 @@ func UpdateOrSaveUTXO(db *gorm.DB, asset string, program string, bcUTXOs []*serv
 			continue
 		}
 
-		if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash, IsSpend: false}).Update("is_locked", false).Error; err != nil {
+		if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_spend = false").Update("is_locked", false).Error; err != nil {
 			return errors.Wrap(err, "update utxo unlocked")
 		}
 	}
 
 	var utxos []*orm.Utxo
-	if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{AssetID: asset, ControlProgram: program, IsSpend: false}).Find(&utxos).Error; err != nil {
+	if err := db.Model(&orm.Utxo{}).Where(&orm.Utxo{AssetID: asset, ControlProgram: program}).Where("is_spend = false").Find(&utxos).Error; err != nil {
 		return errors.Wrap(err, "list unspent utxos")
 	}
 

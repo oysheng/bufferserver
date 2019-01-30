@@ -28,9 +28,9 @@ type ListUTXOsResp struct {
 }
 
 func (s *Server) ListUtxos(c *gin.Context, req *common.AssetProgram) ([]*ListUTXOsResp, error) {
-	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program, IsSpend: false, IsLocked: false}
+	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
-	if err := s.db.Master().Where(utxo).Find(&utxos).Error; err != nil {
+	if err := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = false").Find(&utxos).Error; err != nil {
 		return nil, err
 	}
 
