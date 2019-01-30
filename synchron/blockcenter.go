@@ -37,14 +37,19 @@ func syncBlockCenter(db *gorm.DB, node *service.Node) error {
 			return errors.Wrap(err, "list blockcenter utxos")
 		}
 
-		if err := UpdateOrSaveUTXO(db, base.AssetID, base.ControlProgram, resUTXOs); err != nil {
+		if err := updateOrSaveUTXO(db, base.AssetID, base.ControlProgram, resUTXOs); err != nil {
 			return err
 		}
 	}
+
+	if err := delIrrelevantUTXO(db); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func UpdateOrSaveUTXO(db *gorm.DB, asset string, program string, bcUTXOs []*service.AttachUtxo) error {
+func updateOrSaveUTXO(db *gorm.DB, asset string, program string, bcUTXOs []*service.AttachUtxo) error {
 	utxoMap := make(map[string]bool)
 	for _, butxo := range bcUTXOs {
 		utxo := orm.Utxo{Hash: butxo.Hash}
@@ -91,5 +96,21 @@ func UpdateOrSaveUTXO(db *gorm.DB, asset string, program string, bcUTXOs []*serv
 			return errors.Wrap(err, "update utxo spent")
 		}
 	}
+	return nil
+}
+
+func delIrrelevantUTXO(db *gorm.DB) error {
+	var utxos []*orm.Utxo
+	query := db.Joins("left join Bases ON (Utxos.control_program = Bases.control_program and Utxos.asset_id = Bases.asset_id)").Where("Bases.id is null")
+	if err := query.Find(&utxos).Error; err != nil {
+		return errors.Wrap(err, "query utxo not in base")
+	}
+
+	for _, u := range utxos {
+		if err := db.Delete(&orm.Utxo{}, "hash = ? ", u.Hash).Error; err != nil {
+			return errors.Wrap(err, "delete irrelevant utxo")
+		}
+	}
+
 	return nil
 }
