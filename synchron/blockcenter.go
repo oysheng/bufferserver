@@ -118,7 +118,9 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 func (b *blockCenterKeeper) delIrrelevantUTXO() error {
 	var utxos []*orm.Utxo
 	query := b.db.Joins("left join Bases ON (Utxos.control_program = Bases.control_program and Utxos.asset_id = Bases.asset_id)").Where("Bases.id is null")
-	if err := query.Find(&utxos).Error; err != nil {
+	if err := query.Find(&utxos).Error; err == gorm.ErrRecordNotFound {
+		return nil
+	} else if err != nil {
 		return errors.Wrap(err, "query utxo not in base")
 	}
 
