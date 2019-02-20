@@ -21,18 +21,25 @@
     "cache_seconds": 600,
     "long_cache_hours": 24
   },
-  "api":{
-    "mysql_conns":{
+  "api": {
+    "mysql_conns": {
       "max_open_conns": 20,
       "max_idle_conns": 10
     }
   },
   "updater": {
-    "sync_seconds": 60,
-    "url": "http://127.0.0.1:3000",
-    "mysql_conns":{
-      "max_open_conns": 5,
-      "max_idle_conns": 5
+    "block_center": {
+      "sync_seconds": 60,
+      "url": "http://127.0.0.1:3000",
+      "mysql_conns": {
+        "max_open_conns": 5,
+        "max_idle_conns": 5
+      }
+    },
+    "browser": {
+      "sync_seconds": 60,
+      "expiration_hours": 24,
+      "url": "https://blockmeta.com/api/wisdom"
     }
   }
 }

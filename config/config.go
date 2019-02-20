@@ -74,8 +74,19 @@ type API struct {
 	MySQLConnCfg MySQLConnCfg `json:"mysql_conns"`
 }
 
-type Updater struct {
+type BlockCenter struct {
 	SyncSeconds  int          `json:"sync_seconds"`
 	URL          string       `json:"url"`
 	MySQLConnCfg MySQLConnCfg `json:"mysql_conns"`
+}
+
+type Browser struct {
+	SyncSeconds     int    `json:"sync_seconds"`
+	ExpirationHours int    `json:"expiration_hours"`
+	URL             string `json:"url"`
+}
+
+type Updater struct {
+	BlockCenter BlockCenter `json:"block_center"`
+	Browser     Browser     `json:"browser"`
 }

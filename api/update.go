@@ -44,10 +44,11 @@ type UpdateBalanceReq struct {
 	Address string `json:"address"`
 	AssetID string `json:"asset"`
 	Amount  int64  `json:"amount"`
+	TxID    string `json:"tx_id"`
 }
 
 func (s *Server) UpdateBalance(c *gin.Context, req *UpdateBalanceReq) error {
-	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID, Amount: req.Amount}
+	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID, Amount: req.Amount, TxID: req.TxID}
 	if err := s.db.Master().Save(balance).Error; err != nil {
 		return errors.Wrap(err, "insert balance record")
 	}
