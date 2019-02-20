@@ -15,8 +15,8 @@ type ListBalanceReq struct {
 
 func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) ([]*orm.Balance, error) {
 	var balances []*orm.Balance
-	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID}
-	if err := s.db.Master().Model(&orm.Balance{}).Where(balance).Find(&balances).Error; err != nil {
+	balance := &orm.Balance{Address: req.Address, AssetID: req.AssetID, IsConfirmed: true}
+	if err := s.db.Master().Model(&orm.Balance{}).Where(balance).Where("status_fail = false").Find(&balances).Error; err != nil {
 		return nil, err
 	}
 	return balances, nil
