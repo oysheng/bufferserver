@@ -7,8 +7,8 @@ type Balance struct {
 	Address     string          `json:"address"`
 	AssetID     string          `json:"asset"`
 	Amount      int64           `json:"amount"`
-	TxID        string          `json:"tx_id"`
-	StatusFail  bool            `json:"status_fail"`
-	IsConfirmed bool            `json:"is_confirmed"`
+	TxID        string          `json:"-"`
+	StatusFail  bool            `json:"-"`
+	IsConfirmed bool            `json:"-"`
 	CreatedAt   types.Timestamp `json:"create_at"`
 }
