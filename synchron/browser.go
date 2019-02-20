@@ -50,6 +50,13 @@ func (b *browserKeeper) syncBrowser() error {
 
 	expireTime := time.Duration(b.cfg.Updater.Browser.ExpirationHours) * time.Hour
 	for _, balance := range balances {
+		if balance.TxID == "" {
+			if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
+				return errors.Wrap(err, "delete without TxID balance record")
+			}
+			continue
+		}
+
 		res, err := b.getTransactionStatus(balance.TxID)
 		if err != nil {
 			log.WithField("err", err).Errorf("fail on query transaction [%s] from bytom browser", balance.TxID)
@@ -57,13 +64,10 @@ func (b *browserKeeper) syncBrowser() error {
 		}
 
 		if res.Height == 0 {
-			log.WithField("TxID", balance.TxID).Info("unconfirmed transaction")
-			continue
-		}
-
-		if time.Now().Unix()-balance.CreatedAt.Unix() > int64(expireTime) {
-			if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
-				return errors.Wrap(err, "delete expiration balance record")
+			if time.Now().Unix()-balance.CreatedAt.Unix() > int64(expireTime) {
+				if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
+					return errors.Wrap(err, "delete expiration balance record")
+				}
 			}
 			continue
 		}
