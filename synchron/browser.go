@@ -52,21 +52,23 @@ func (b *browserKeeper) syncBrowser() error {
 	for _, balance := range balances {
 		res, err := b.getTransactionStatus(balance.TxID)
 		if err != nil {
-			return errors.Wrap(err, "query transaction status")
+			log.WithField("err", err).Errorf("fail on query transaction [%s] from bytom browser", balance.TxID)
+			continue
 		}
 
-		if res == nil || res.Height == 0 {
+		if res.Height == 0 {
+			log.WithField("TxID", balance.TxID).Info("unconfirmed transaction")
 			continue
 		}
 
 		if time.Now().Unix()-balance.CreatedAt.Unix() > int64(expireTime) {
-			if err := b.db.Delete(balance).Error; err != nil {
+			if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
 				return errors.Wrap(err, "delete expiration balance record")
 			}
 			continue
 		}
 
-		if err := b.db.Model(&orm.Balance{}).Where(balance).Update("status_fail", res.StatusFail).Update("is_confirmed", true).Error; err != nil {
+		if err := b.db.Model(&orm.Balance{}).Where(&orm.Balance{ID: balance.ID}).Update("status_fail", res.StatusFail).Update("is_confirmed", true).Error; err != nil {
 			return errors.Wrap(err, "update balance")
 		}
 	}
