@@ -14,17 +14,17 @@ import (
 )
 
 type blockCenterKeeper struct {
-	cfg  *config.Config
-	db   *gorm.DB
-	node *service.Node
+	cfg     *config.Config
+	db      *gorm.DB
+	service *service.Service
 }
 
 func NewBlockCenterKeeper(cfg *config.Config, db *gorm.DB) *blockCenterKeeper {
-	node := service.NewNode(cfg.Updater.BlockCenter.URL)
+	service := service.NewService(cfg.Updater.BlockCenter.URL)
 	return &blockCenterKeeper{
-		cfg:  cfg,
-		db:   db,
-		node: node,
+		cfg:     cfg,
+		db:      db,
+		service: service,
 	}
 }
 
@@ -48,7 +48,7 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 		filter["asset"] = base.AssetID
 		filter["script"] = base.ControlProgram
 		req := &common.Display{Filter: filter}
-		resUTXOs, err := b.node.ListBlockCenterUTXOs(req)
+		resUTXOs, err := b.service.ListBlockCenterUTXOs(req)
 		if err != nil {
 			return errors.Wrap(err, "list blockcenter utxos")
 		}

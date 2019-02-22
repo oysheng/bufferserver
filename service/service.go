@@ -8,14 +8,14 @@ import (
 	"github.com/bufferserver/util"
 )
 
-// Node can invoke the api which provide by the full node server
-type Node struct {
+// Service can invoke the api which provide by the server
+type Service struct {
 	url string
 }
 
-// Node create a api client with target server
-func NewNode(url string) *Node {
-	return &Node{url: url}
+// NewService new a service with target server
+func NewService(url string) *Service {
+	return &Service{url: url}
 }
 
 type AttachUtxo struct {
@@ -24,14 +24,14 @@ type AttachUtxo struct {
 	Amount uint64 `json:"amount"`
 }
 
-func (n *Node) ListBlockCenterUTXOs(req *common.Display) ([]*AttachUtxo, error) {
+func (s *Service) ListBlockCenterUTXOs(req *common.Display) ([]*AttachUtxo, error) {
 	url := "/api/v1/btm/q/list-utxos"
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "json marshal")
 	}
 
-	resp, err := n.request(url, payload)
+	resp, err := s.request(url, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -54,9 +54,9 @@ type Response struct {
 	Result map[string]interface{} `json:"result,omitempty"`
 }
 
-func (n *Node) request(path string, payload []byte) (interface{}, error) {
+func (s *Service) request(path string, payload []byte) (interface{}, error) {
 	resp := &Response{}
-	if err := util.Post(n.url+path, payload, resp); err != nil {
+	if err := util.Post(s.url+path, payload, resp); err != nil {
 		return nil, err
 	}
 
@@ -65,4 +65,18 @@ func (n *Node) request(path string, payload []byte) (interface{}, error) {
 	}
 
 	return resp.Result["data"], nil
+}
+
+type TransactionStatusResp struct {
+	Height     int64 `json:"height"`
+	StatusFail bool  `json:"status_fail"`
+}
+
+func (s *Service) GetTransactionStatus(TxID string) (*TransactionStatusResp, error) {
+	url := s.url + "/transaction/" + TxID
+	var resp TransactionStatusResp
+	if err := util.Get(url, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }

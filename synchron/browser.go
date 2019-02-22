@@ -10,26 +10,20 @@ import (
 	"github.com/bufferserver/config"
 	"github.com/bufferserver/database/orm"
 	"github.com/bufferserver/service"
-	"github.com/bufferserver/util"
 )
 
 type browserKeeper struct {
-	cfg  *config.Config
-	db   *gorm.DB
-	node *service.Node
-}
-
-type TransactionStatusResp struct {
-	Height     int64 `json:"height"`
-	StatusFail bool  `json:"status_fail"`
+	cfg     *config.Config
+	db      *gorm.DB
+	service *service.Service
 }
 
 func NewBrowserKeeper(cfg *config.Config, db *gorm.DB) *browserKeeper {
-	node := service.NewNode(cfg.Updater.BlockCenter.URL)
+	service := service.NewService(cfg.Updater.BlockCenter.URL)
 	return &browserKeeper{
-		cfg:  cfg,
-		db:   db,
-		node: node,
+		cfg:     cfg,
+		db:      db,
+		service: service,
 	}
 }
 
@@ -57,7 +51,7 @@ func (b *browserKeeper) syncBrowser() error {
 			continue
 		}
 
-		res, err := b.getTransactionStatus(balance.TxID)
+		res, err := b.service.GetTransactionStatus(balance.TxID)
 		if err != nil {
 			log.WithField("err", err).Errorf("fail on query transaction [%s] from bytom browser", balance.TxID)
 			continue
@@ -77,13 +71,4 @@ func (b *browserKeeper) syncBrowser() error {
 		}
 	}
 	return nil
-}
-
-func (b *browserKeeper) getTransactionStatus(TxID string) (*TransactionStatusResp, error) {
-	url := b.cfg.Updater.Browser.URL + "/transaction/" + TxID
-	var resp TransactionStatusResp
-	if err := util.Get(url, &resp); err != nil {
-		return nil, err
-	}
-	return &resp, nil
 }
