@@ -47,6 +47,7 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 	for _, base := range bases {
 		filter["asset"] = base.AssetID
 		filter["script"] = base.ControlProgram
+		filter["unconfirmed"] = true
 		req := &common.Display{Filter: filter}
 		resUTXOs, err := b.service.ListBlockCenterUTXOs(req)
 		if err != nil {
@@ -54,6 +55,10 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 		}
 
 		if err := b.updateOrSaveUTXO(base.AssetID, base.ControlProgram, resUTXOs); err != nil {
+			return err
+		}
+
+		if err := b.updateUTXOStatus(base.AssetID, base.ControlProgram, resUTXOs); err != nil {
 			return err
 		}
 	}
@@ -66,10 +71,8 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 }
 
 func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTXOs []*service.AttachUtxo) error {
-	utxoMap := make(map[string]bool)
 	for _, butxo := range bcUTXOs {
 		utxo := orm.Utxo{Hash: butxo.Hash}
-		utxoMap[butxo.Hash] = true
 		if err := b.db.Where(utxo).First(&utxo).Error; err != nil && err != gorm.ErrRecordNotFound {
 			return errors.Wrap(err, "query utxo")
 		} else if err == gorm.ErrRecordNotFound {
@@ -80,7 +83,7 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 				ControlProgram: program,
 				IsSpend:        false,
 				IsLocked:       false,
-				Duration:       uint64(60),
+				Duration:       uint64(600),
 			}
 
 			if err := b.db.Save(utxo).Error; err != nil {
@@ -98,6 +101,15 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 		}
 	}
 
+	return nil
+}
+
+func (b *blockCenterKeeper) updateUTXOStatus(asset string, program string, bcUTXOs []*service.AttachUtxo) error {
+	utxoMap := make(map[string]bool)
+	for _, butxo := range bcUTXOs {
+		utxoMap[butxo.Hash] = true
+	}
+
 	var utxos []*orm.Utxo
 	if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{AssetID: asset, ControlProgram: program}).Where("is_spend = false").Find(&utxos).Error; err != nil {
 		return errors.Wrap(err, "list unspent utxos")
@@ -112,6 +124,7 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 			return errors.Wrap(err, "update utxo spent")
 		}
 	}
+
 	return nil
 }
 
