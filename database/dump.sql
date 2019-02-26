@@ -75,7 +75,6 @@ CREATE TABLE `utxos` (
   `amount` bigint(20) unsigned DEFAULT '0',
   `control_program` text NOT NULL,
   `is_spend` tinyint(1) DEFAULT '0',
-  `is_confirmed` tinyint(1) DEFAULT '0',
   `is_locked` tinyint(1) DEFAULT '0',
   `submit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `duration` bigint(20) unsigned DEFAULT '0',

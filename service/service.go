@@ -19,10 +19,9 @@ func NewService(url string) *Service {
 }
 
 type AttachUtxo struct {
-	Hash        string `json:"hash"`
-	Asset       string `json:"asset"`
-	Amount      uint64 `json:"amount"`
-	IsConfirmed bool   `json:"is_confirmed"`
+	Hash   string `json:"hash"`
+	Asset  string `json:"asset"`
+	Amount uint64 `json:"amount"`
 }
 
 func (s *Service) ListBlockCenterUTXOs(req *common.Display) ([]*AttachUtxo, error) {

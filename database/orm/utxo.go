@@ -9,7 +9,6 @@ type Utxo struct {
 	Amount         uint64
 	ControlProgram string
 	IsSpend        bool
-	IsConfirmed    bool
 	IsLocked       bool
 	SubmitTime     *time.Time
 	Duration       uint64

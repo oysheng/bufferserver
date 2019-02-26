@@ -47,7 +47,6 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 	for _, base := range bases {
 		filter["asset"] = base.AssetID
 		filter["script"] = base.ControlProgram
-		filter["unconfirmed"] = true
 		req := &common.Display{Filter: filter}
 		resUTXOs, err := b.service.ListBlockCenterUTXOs(req)
 		if err != nil {
@@ -82,7 +81,6 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 				Amount:         butxo.Amount,
 				ControlProgram: program,
 				IsSpend:        false,
-				IsConfirmed:    butxo.IsConfirmed,
 				IsLocked:       false,
 				Duration:       uint64(600),
 			}
@@ -91,12 +89,6 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 				return errors.Wrap(err, "save utxo")
 			}
 			continue
-		}
-
-		if butxo.IsConfirmed {
-			if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_confirmed = false").Update("is_confirmed", true).Error; err != nil {
-				return errors.Wrap(err, "update utxo confirmed")
-			}
 		}
 
 		if time.Now().Unix()-utxo.SubmitTime.Unix() < int64(utxo.Duration) {
