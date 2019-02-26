@@ -2,6 +2,8 @@ package api
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/bufferserver/api/common"
@@ -24,7 +26,8 @@ func (s *Server) ListBalances(c *gin.Context, req *ListBalanceReq) ([]*orm.Balan
 
 type ListUTXOsReq struct {
 	common.AssetProgram
-	Sorter common.Sorter `json:"sort"`
+	Confirmed bool          `json:"confirmed"`
+	Sorter    common.Sorter `json:"sort"`
 }
 
 type ListUTXOsResp struct {
@@ -37,12 +40,35 @@ func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.Pagin
 	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
 	query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = false")
+	if req.Confirmed {
+		query = query.Where("is_confirmed = true")
+	}
+
 	if req.Sorter.By == "amount" {
 		query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
 	}
 
 	if err := query.Offset(page.Start).Limit(page.Limit).Find(&utxos).Error; err != nil {
 		return nil, err
+	}
+
+	// list locked UTXOs with more than 60 seconds from submit time while the count of unlock UTXOs is 0
+	if len(utxos) == 0 {
+		var lockUTXOs []*orm.Utxo
+		query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = true")
+		if req.Sorter.By == "amount" {
+			query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
+		}
+
+		if err := query.Offset(page.Start).Limit(page.Limit).Find(&lockUTXOs).Error; err != nil {
+			return nil, err
+		}
+
+		for _, u := range lockUTXOs {
+			if time.Now().Unix()-u.SubmitTime.Unix() >= 60 {
+				utxos = append(utxos, u)
+			}
+		}
 	}
 
 	result := []*ListUTXOsResp{}

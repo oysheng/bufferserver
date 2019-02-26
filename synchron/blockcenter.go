@@ -82,6 +82,7 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 				Amount:         butxo.Amount,
 				ControlProgram: program,
 				IsSpend:        false,
+				IsConfirmed:    butxo.IsConfirmed,
 				IsLocked:       false,
 				Duration:       uint64(600),
 			}
@@ -92,11 +93,17 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 			continue
 		}
 
+		if butxo.IsConfirmed {
+			if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_confirmed = false").Update("is_confirmed", true).Error; err != nil {
+				return errors.Wrap(err, "update utxo confirmed")
+			}
+		}
+
 		if time.Now().Unix()-utxo.SubmitTime.Unix() < int64(utxo.Duration) {
 			continue
 		}
 
-		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_spend = false").Update("is_locked", false).Error; err != nil {
+		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_locked = true").Update("is_locked", false).Error; err != nil {
 			return errors.Wrap(err, "update utxo unlocked")
 		}
 	}
