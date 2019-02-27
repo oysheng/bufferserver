@@ -47,6 +47,7 @@ func (b *blockCenterKeeper) syncBlockCenter() error {
 	for _, base := range bases {
 		filter["asset"] = base.AssetID
 		filter["script"] = base.ControlProgram
+		filter["unconfirmed"] = true
 		req := &common.Display{Filter: filter}
 		resUTXOs, err := b.service.ListBlockCenterUTXOs(req)
 		if err != nil {
