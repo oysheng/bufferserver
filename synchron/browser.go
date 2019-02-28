@@ -19,7 +19,7 @@ type browserKeeper struct {
 }
 
 func NewBrowserKeeper(cfg *config.Config, db *gorm.DB) *browserKeeper {
-	service := service.NewService(cfg.Updater.BlockCenter.URL)
+	service := service.NewService(cfg.Updater.Browser.URL)
 	return &browserKeeper{
 		cfg:     cfg,
 		db:      db,
