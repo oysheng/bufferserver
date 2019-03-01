@@ -54,7 +54,7 @@ func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.Pagin
 		}
 
 		// update lock time to 60 second
-		if err := s.db.Master().Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: lockUTXOs[0].Hash}).Update("duration", uint64(60)).Error; err != nil {
+		if err := s.db.Master().Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: lockUTXOs[0].Hash}).Where("duration > ?", 60).Update("duration", uint64(60)).Error; err != nil {
 			return nil, err
 		}
 	}
