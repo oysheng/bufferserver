@@ -46,6 +46,19 @@ func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.Pagin
 		return nil, err
 	}
 
+	if len(utxos) == 0 {
+		var lockUTXOs []*orm.Utxo
+		query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = true")
+		if err := query.Offset(page.Start).Limit(page.Limit).Find(&lockUTXOs).Error; err != nil {
+			return nil, err
+		}
+
+		// update lock time to 60 second
+		if err := s.db.Master().Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: lockUTXOs[0].Hash}).Update("duration", uint64(60)).Error; err != nil {
+			return nil, err
+		}
+	}
+
 	result := []*ListUTXOsResp{}
 	for _, u := range utxos {
 		result = append(result, &ListUTXOsResp{
