@@ -34,7 +34,7 @@ type ListUTXOsResp struct {
 	Amount uint64 `json:"amount"`
 }
 
-func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.PaginationQuery) ([]*ListUTXOsResp, error) {
+func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq) ([]*ListUTXOsResp, error) {
 	utxo := &orm.Utxo{AssetID: req.Asset, ControlProgram: req.Program}
 	var utxos []*orm.Utxo
 	query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = false")
@@ -42,19 +42,11 @@ func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.Pagin
 		query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
 	}
 
-	if err := query.Offset(page.Start).Limit(page.Limit).Find(&utxos).Error; err != nil {
-		return nil, err
-	}
-
 	if len(utxos) == 0 {
 		var lockUTXOs []*orm.Utxo
 		query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = true")
 		if req.Sorter.By == "amount" {
 			query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
-		}
-
-		if err := query.Offset(page.Start).Limit(page.Limit).Find(&lockUTXOs).Error; err != nil {
-			return nil, err
 		}
 
 		// update lock time to 60 second
