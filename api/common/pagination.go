@@ -10,7 +10,7 @@ import (
 
 const (
 	defaultSatrtStr = "0"
-	defaultLimitStr = "10"
+	defaultLimitStr = "100"
 	maxPageLimit    = 1000
 )
 
