@@ -26,12 +26,13 @@ type AttachUtxo struct {
 
 func (s *Service) ListBlockCenterUTXOs(req *common.Display) ([]*AttachUtxo, error) {
 	url := "/api/v1/btm/q/list-utxos"
+	page := "?limit=1000&start=0"
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "json marshal")
 	}
 
-	resp, err := s.request(url, payload)
+	resp, err := s.request(url+page, payload)
 	if err != nil {
 		return nil, err
 	}
