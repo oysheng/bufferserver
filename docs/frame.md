@@ -157,7 +157,92 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
 
 - DAPP前端
     
-    参考前端架构说明
+    前端主要包含页面的设计、插件的调用、交易逻辑的处理、缓冲服务器的交互等。接下来对这几个重要的部分展开说明：
+    
+    - 1）前端页面的设计主要是网页界面的设计，这个部分开发者可以自己选择页面模式
+    
+    - 2）插件钱包已经进行了结构化的封装，并且提供了外部接口给`DAPP`开发者调用，开发者只需要将插件的参数按照规则进行填充
+
+    - 3）比原的交易的是可以支持多输入多输出的交易结构，交易输入输出的位置也会对合约的执行有影响。如果合约中涉及到数值的判断，前端需要也需要进行相应的预判断，可以防止用户在条件不符的情况下调用合约时失败。此外，合约中存在`if-else`结构并且`body`中包含`lock`或`unlock`语句时，也需要前端进行预判断，然后选择合适的合约交易模板结构。
+
+    - 4）在前端页面与缓冲服务器的交互中，储蓄页面和取现页面各有一个按键，点击按键首先会触发`list-utxos`扫描可用的合约`utxo`。如果返回结果中有多个`utxo`（例如取现合约），前端会根据用户输入的`amount`，自动采用最优匹配算法来查找最合适的值，同时调用`update-utxo`接口将该`utxo`锁定。然后会弹出插件框来提示用户输入密码，该流程包含了构建交易的流程：首先前端会根据合约的输入值来计算`if-else`的条件判断值，然后选择不同的交易模板; 其次根据合约中`lock`和`unlock`语句中的`amount`值进行计算，并填充到交易的`input`和`output`结构中。签名交易之前需要对合约参数进行转换，然后调用插件进行签名，具体可以参考一下`bytom`插件钱包接口。如果签名已经完成，需要将参数和签名结果放到提交交易的参数结构中，然后调用`submit-payment`接口请求`bycoin`服务器，一旦交易发送成功，便调用`update-balance`更新来交易记录。
+
+    以储蓄分红合约为例，其流程大致如下：
+
+    - 1）配置合约参数
+
+        该`Dapp demo`中需要配置实例化的参数为`assetDeposited`、`totalAmountBill`、`totalAmountCapital`、`dueBlockHeight`、`expireBlockHeight`、`additionalBlockHeight`、`banker`、`bankerKey`， 这些参数都是固定的。
+
+    - 2）前端预计算处理
+
+        以储蓄合约`FixedLimitCollect`为例，前端构造该合约的input和output的时候，需要通过具体的合约内容进行分析预判。
+
+        合约中`billAmount of billAsset`表示锁定的资产和数量，而`billAmount`、`billAsset`和`utxohash`都是储存在缓冲服务器的数据表里面，因此前端需要调用`list-utxo`查找与该资产`asset`和`program`相关的所有未花费的utxo。 
+
+        除了合约锁定的资产，前端还需要预判下所有可验证的`verify`语句，从而判定交易是否可行，因为一旦前端对这些验证失败，合约将必然验证失败。此外，如果`define`或`assign`语句涉及的变量，前端也需预计算这些变量的值。
+
+    - 3）交易组成
+        由于解锁合约是解锁`lock`语句条件，构造交易的`input`和`output`也需要根据`lock`语句来变换。
+
+        - 交易`input`结构如下：
+
+        交易输入是固定的，只需提取输入值即可，其中`spendUTXOAction(utxohash)`表示花费的合约`utxo`，而`spendWalletAction(amount, Constant.assetDeposited)`表示用户输入的储蓄或取现的数量，而资产类型则由前端固定。
+
+        ```ecmascript 6
+
+        export function spendUTXOAction(utxohash){
+            return {
+                "type": "spend_utxo",
+                "output_id": utxohash
+            }
+        }
+
+        export function spendWalletAction(amount, asset){
+            return {
+                "amount": amount,
+                "asset": asset,
+                "type": "spend_wallet"
+            }
+        }
+
+        const input = []
+        input.push(spendUTXOAction(utxohash))
+        input.push(spendWalletAction(amount, Constant.assetDeposited))
+        ```
+
+        - 交易`output`结构如下：
+
+        输出结构需要参考合约的语句类型和判定条件，根据上面的合约中`if-else`判定逻辑，下面便是`output`的构造模型。
+
+        ```ecmascript 6
+        export function controlProgramAction(amount, asset, program){
+            return {
+                "amount": amount,
+                "asset": asset,
+                "control_program": program,
+                "type": "control_program"
+            }
+        }
+
+        export function controlAddressAction(amount, asset, address){
+            return {
+                "amount": amount,
+                "asset": asset,
+                "address": address,
+                "type": "control_address"
+            }
+        }
+
+        const output = []
+        if(amountDeposited < billAmount){
+            output.push(controlProgramAction(amountDeposited, Constant.assetDeposited, Constant.profitProgram))
+            output.push(controlAddressAction(amountDeposited, billAsset, saver))
+            output.push(controlProgramAction((billAmount-amountDeposited), billAsset, Constant.depositProgram))
+        }else{
+            output.push(controlProgramAction(amountDeposited, Constant.assetDeposited, Constant.profitProgram))
+            output.push(controlAddressAction(billAmount, billAsset, saver))
+        }
+        ```
 
 - DAPP缓冲服务器
   
@@ -171,7 +256,7 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
 
     - 3）项目管理员调用`update-base`接口更新`DAPP`关注的合约`program`和`asset`。而`utxo`同步进程会根据`base`表的记录来定时扫描并更新本地的`utxo`表中的信息，并且根据超时时间定期解锁被锁定的`utxo`
 
-    - 4）用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
+    - 4）用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。用户在前端在点击储蓄或取现按键的时候，会调用`utxo`最优匹配算法选择最佳的`utxo`，然后调用`update-utxo`接口对该`utxo`进行锁定，最后就用户就可以通过插件钱包调用`bycoin`服务器的构建交易接口来创建交易、签名交易和提交交易。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
 
     - 5）用户发送交易成功后会生成两条`balance`记录表，默认状态是失败的，其中交易ID用于向区块链浏览器查询交易状态，如果交易成功则会更新`balance`的交易状态。此外，前端页面的`balance`列表表只显示交易成功的记录。
 
