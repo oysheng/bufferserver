@@ -83,7 +83,7 @@ contract FixedLimitProfit(assetBill: Asset,
 }
 ```
 
-从源代码中可以看出，储蓄合约引用了取现合约，因为里面存在资产的接收对象是取现合约。合约的源代码说明可以具体参考[`Equity合约介绍`](https://docs.bytom.io/mydoc_smart_contract_overview.cn.html).
+合约的源代码说明可以具体参考[`Equity合约介绍`](https://docs.bytom.io/mydoc_smart_contract_overview.cn.html).
 
 ### 注意事项：
 
@@ -106,7 +106,7 @@ banker                  :0014dedfd406c591aa221a047a260107f877da92fec5
 bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf
 ```
 
-其中`bankerKey`是用户的`publicKey`，可以通过比原链的接口[`list-pubkeys`](https://github.com/Bytom/bytom/wiki/API-Reference#list-pubkeys)来获取，注意需要保存一下对应的`rootXpub`和`Path`，否则无法得到正确的签名结果。
+其中`bankerKey`是管理员的`publicKey`，可以通过比原链的接口[`list-pubkeys`](https://github.com/Bytom/bytom/wiki/API-Reference#list-pubkeys)来获取，注意管理员需要保存一下对应的`rootXpub`和`Path`，否则无法正确调用`clause cancel`。
 
 实例化合约命令如下：
 
