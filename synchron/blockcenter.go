@@ -98,6 +98,12 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 			continue
 		}
 
+		if utxo.IsConfirmed != butxo.IsConfirmed {
+			if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Update("is_confirmed", butxo.IsConfirmed).Error; err != nil {
+				return errors.Wrap(err, "update utxo confirmed flag by list-utxos")
+			}
+		}
+
 		if time.Now().Unix()-utxo.SubmitTime.Unix() < int64(utxo.Duration) {
 			continue
 		}
@@ -130,7 +136,7 @@ func (b *blockCenterKeeper) updateUTXOStatus(asset string, program string, bcUTX
 			continue
 		}
 
-		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: u.Hash}).Update("is_spend", true).Error; err != nil {
+		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: u.Hash}).Update("is_spend", true).Update("is_confirmed", true).Error; err != nil {
 			return errors.Wrap(err, "update utxo spent")
 		}
 	}
