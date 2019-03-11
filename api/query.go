@@ -48,7 +48,7 @@ func (s *Server) ListUtxos(c *gin.Context, req *ListUTXOsReq, page *common.Pagin
 
 	if len(utxos) == 0 {
 		var lockUTXOs []*orm.Utxo
-		query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = true")
+		query := s.db.Master().Where(utxo).Where("is_spend = false").Where("is_locked = true").Where("is_confirmed = true")
 		if req.Sorter.By == "amount" {
 			query = query.Order(fmt.Sprintf("amount %s", req.Sorter.Order))
 		}

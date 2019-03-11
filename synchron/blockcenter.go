@@ -82,8 +82,14 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 				Amount:         butxo.Amount,
 				ControlProgram: program,
 				IsSpend:        false,
+				IsConfirmed:    butxo.IsConfirmed,
 				IsLocked:       false,
 				Duration:       uint64(600),
+			}
+
+			// the duration of unconfirmed utxo is the 1.5x of confirmed utxo
+			if !utxo.IsConfirmed {
+				utxo.Duration = uint64(900)
 			}
 
 			if err := b.db.Save(utxo).Error; err != nil {
@@ -96,8 +102,12 @@ func (b *blockCenterKeeper) updateOrSaveUTXO(asset string, program string, bcUTX
 			continue
 		}
 
-		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_locked = true").Update("is_locked", false).Error; err != nil {
+		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_locked = true").Where("is_confirmed = true").Update("is_locked", false).Error; err != nil {
 			return errors.Wrap(err, "update utxo unlocked")
+		}
+
+		if err := b.db.Model(&orm.Utxo{}).Where(&orm.Utxo{Hash: butxo.Hash}).Where("is_confirmed = false").Update("is_locked", true).Error; err != nil {
+			return errors.Wrap(err, "update unconfirmed utxo locked")
 		}
 	}
 
