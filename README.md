@@ -28,13 +28,7 @@ Enter the correct of `root` password that will create database and tables succes
 
 ### Modify config
 
-the config file is `config_local.json`, these parameters can be changed according to developer needs. Besides, the 
-test blockcenter url is that:
-
-```
-solonet:  http://52.82.40.215:3000"
-testnet:  http://52.82.40.215:3020"
-```
+the config file is `config_local.json`, these parameters can be changed according to developer needs. 
 
 ```js
 {
@@ -82,6 +76,13 @@ testnet:  http://52.82.40.215:3020"
     }
   }
 }
+```
+
+Besides, the test blockcenter url is that:
+
+```
+solonet:  http://52.82.40.215:3000
+testnet:  http://52.82.40.215:3020
 ```
 
 ### Startup service
