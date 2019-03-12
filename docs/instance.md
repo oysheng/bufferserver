@@ -159,11 +159,6 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
 ```
 
 ## 储蓄分红DAPP架构
-   
-架构大致如下：
-
-![image](/docs/images/frame.png)
-
 
 ### DAPP前端
     
