@@ -105,7 +105,11 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
 实例化合约命令如下：
 
 ```sh
-./equity deposit/FixedLimitCollect --instance c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee 10000000000 20000000000 1070 1090 1100 0014dedfd406c591aa221a047a260107f877da92fec5 055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf
+// 储蓄合约
+./equity FixedLimitCollect --instance c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee 10000000000 20000000000 1070 1090 1100 0014dedfd406c591aa221a047a260107f877da92fec5 055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf
+
+// 取现合约
+./equity FixedLimitProfit --instance c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee 10000000000 20000000000 1090 1100 0014dedfd406c591aa221a047a260107f877da92fec5 055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf
 ```
 
 ## 发布合约交易
@@ -114,33 +118,45 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
    
 ```js
 {
-    "base_transaction": null,
-    "actions": [
+  "base_transaction": null,
+  "actions": [
     {
-        "account_id": "0ILGLSTC00A02",
-        "amount": 20000000,
-        "asset_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        "type": "spend_account"
+      "account_id": "0ILGLSTC00A02",
+      "amount": 20000000,
+      "asset_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "type": "spend_account"
     },
     {
-        "account_id": "0ILGLSTC00A02",
-        "amount": 100000000000,
-        "asset_id": "13016eff73ffb7539a69e122f80f5c1cc94446773ac3f64dec290429f87e73b3",
-        "type": "spend_account"
+      "account_id": "0ILGLSTC00A02",
+      "amount": 100000000000,
+      "asset_id": "13016eff73ffb7539a69e122f80f5c1cc94446773ac3f64dec290429f87e73b3",
+      "type": "spend_account"
     },
     {
-        "amount": 100000000000,
-        "asset_id": "13016eff73ffb7539a69e122f80f5c1cc94446773ac3f64dec290429f87e73b3",
-        "control_program": "20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf160014dedfd406c591aa221a047a260107f877da92fec5024c04024204022e040500c817a8040500e40b540220c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee4d4302597a64370200005479cda069c35b790400e1f5059600a05c797ba19a53795579a19a695a790400e1f5059653790400e1f505967800a07800a09a695c797b957c9600a069c35b797c9f9161645b010000005b79c2547951005e79895d79895c79895b7989597989587989537a894ca4587a64980000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c967600a069c3787c9f91616481000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696393000000005b795479515b79c16951c3c2515d79c16963a4000000557acd9f69577a577aae7cac890274787e008901c07ec169515b79c2515d79c16952c35c7994c251005d79895c79895b79895a79895979895879895779895679895579890274787e008901c07ec1696332020000005b79c2547951005e79895d79895c79895b7989597989587989537a894ca4587a64980000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c967600a069c3787c9f91616481000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696393000000005b795479515b79c16951c3c2515d79c16963a4000000557acd9f69577a577aae7cac890274787e008901c07ec16951c3c2515d79c1696343020000547acd9f69587a587aae7cac747800c0",
-        "type": "control_program"
+      "amount": 100000000000,
+      "asset_id": "13016eff73ffb7539a69e122f80f5c1cc94446773ac3f64dec290429f87e73b3",
+      "control_program": "20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf160014dedfd406c591aa221a047a260107f877da92fec5024c04024204022e040500c817a8040500e40b540220c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee4d3b02597a642f0200005479cda069c35b797ca153795579a19a695a790400e1f5059653790400e1f505967c00a07c00a09a69c35b797c9f9161644d010000005b79c2547951005e79895d79895c79895b7989597989587989537a894caa587a649e0000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f91616487000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696399000000005b795479515b79c16951c3c2515d79c16963aa000000557acd9f69577a577aae7cac890274787e008901c07ec169515b79c2515d79c16952c35c7994c251005d79895c79895b79895a79895979895879895779895679895579890274787e008901c07ec169632a020000005b79c2547951005e79895d79895c79895b7989597989587989537a894caa587a649e0000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f91616487000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696399000000005b795479515b79c16951c3c2515d79c16963aa000000557acd9f69577a577aae7cac890274787e008901c07ec16951c3c2515d79c169633b020000547acd9f69587a587aae7cac747800c0",
+      "type": "control_program"
     }
-],
-    "ttl": 0,
-    "time_range": 1521625823
+  ],
+  "ttl": 0,
+  "time_range": 1521625823
 }
 ```
 
 合约交易成功后，合约`control_program`对应的`UTXO`将会被所有用户查询到，使用比原链的接口[`list-unspent-outputs`](https://github.com/Bytom/bytom/wiki/API-Reference#list-unspent-outputs)即可查询。
+
+此外，开发者需要存储一下合约`UTXO`的`assetID`和`program`，以便在`DAPP`的前端页面的`config`配置文件和`bufferserver`缓冲服务器中调用。如上所示：
+
+```
+// 储蓄合约
+assetID：13016eff73ffb7539a69e122f80f5c1cc94446773ac3f64dec290429f87e73b3
+program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf160014dedfd406c591aa221a047a260107f877da92fec5024c04024204022e040500c817a8040500e40b540220c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee4d3b02597a642f0200005479cda069c35b797ca153795579a19a695a790400e1f5059653790400e1f505967c00a07c00a09a69c35b797c9f9161644d010000005b79c2547951005e79895d79895c79895b7989597989587989537a894caa587a649e0000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f91616487000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696399000000005b795479515b79c16951c3c2515d79c16963aa000000557acd9f69577a577aae7cac890274787e008901c07ec169515b79c2515d79c16952c35c7994c251005d79895c79895b79895a79895979895879895779895679895579890274787e008901c07ec169632a020000005b79c2547951005e79895d79895c79895b7989597989587989537a894caa587a649e0000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f91616487000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696399000000005b795479515b79c16951c3c2515d79c16963aa000000557acd9f69577a577aae7cac890274787e008901c07ec16951c3c2515d79c169633b020000547acd9f69587a587aae7cac747800c0
+
+// 取现合约
+assetID：c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee
+program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf160014dedfd406c591aa221a047a260107f877da92fec5024c040242040500c817a8040500e40b540220c6b12af8326df37b8d77c77bfa2547e083cbacde15cc48da56d4aa4e4235a3ee4caa587a649e0000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f91616487000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696399000000005b795479515b79c16951c3c2515d79c16963aa000000557acd9f69577a577aae7cac747800c0
+```
 
 ## 储蓄分红DAPP架构
    
@@ -155,24 +171,53 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
 
 - 1）配置合约参数
 
-    该`Dapp demo`中需要配置实例化的参数为`assetDeposited`、`totalAmountBill`、`totalAmountCapital`、`dueBlockHeight`、`expireBlockHeight`、`additionalBlockHeight`、`banker`、`bankerKey`， 这些参数都是固定的。
+    该`Dapp demo`中需要配置实例化的参数为`assetDeposited`、`totalAmountBill`、`totalAmountCapital`、`dueBlockHeight`、`expireBlockHeight`、`additionalBlockHeight`、`banker`、`bankerKey`。其前端配置文件为[`configure.json.js`](https://github.com/Bytom/Bytom-Dapp-Demo/blob/master/contracts/configure.json.js)
 
-- 2）前端预计算处理
+    ```js
+    var config = {
+        "solonet": {
+            "depositProgram": "2091194ddbf3614cafbadb1274c33e61afd4d5044c6ec4c30f8202980199c30083160014c800033d5e94de5f22e23a6d3cbeaed87b55bd640600204aa9d101050010a5d4e8203310d9951697418af3cdbe7a9cdde1dc49bb5439503dacb33828d6c9ef5af5a24dfc01567a64f5010000c358797ca153795579a19a6957790400e1f5059653790400e1f505967c00a07c00a09a69c358797c9f91616429010000005879c2547951005b79895a7989597989587989537a894c9a567a649300000057790400e1f5059653790400e1f505967800a07800a09a5a7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f9161647c0000000059795479515979c1695178c2515b79c16952c3527994c251005b79895a79895979895879895779895679890274787e008901c07ec169638e0000000059795479515979c16951c3c2515b79c169639a000000567a567aae7cac890274787e008901c07ec169515879c2515a79c16952c3597994c251005a79895979895879895779895679895579890274787e008901c07ec16963f0010000005879c2547951005b79895a7989597989587989537a894c9a567a649300000057790400e1f5059653790400e1f505967800a07800a09a5a7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f9161647c0000000059795479515979c1695178c2515b79c16952c3527994c251005b79895a79895979895879895779895679890274787e008901c07ec169638e0000000059795479515979c16951c3c2515b79c169639a000000567a567aae7cac890274787e008901c07ec16951c3c2515a79c16963fc010000567a567aae7cac747800c0",
+            "profitProgram": "2091194ddbf3614cafbadb1274c33e61afd4d5044c6ec4c30f8202980199c30083160014c800033d5e94de5f22e23a6d3cbeaed87b55bd640600204aa9d101050010a5d4e820666f298d34806a6db0528c3b3d081bc00fa58aa393e7c42f90d67eb7db2a524f4c9a567a649300000057790400e1f5059653790400e1f505967800a07800a09a5a7956799f9a6955797b957c96c37800a052797ba19a69c3787c9f9161647c0000000059795479515979c1695178c2515b79c16952c3527994c251005b79895a79895979895879895779895679890274787e008901c07ec169638e0000000059795479515979c16951c3c2515b79c169639a000000567a567aae7cac747800c0",
+            "assetDeposited": "3310d9951697418af3cdbe7a9cdde1dc49bb5439503dacb33828d6c9ef5af5a2",
+            "assetBill": "666f298d34806a6db0528c3b3d081bc00fa58aa393e7c42f90d67eb7db2a524f",
+            "totalAmountBill": 1000000000000,
+            "totalAmountCapital": 2000000000000,
+            "dueBlockHeight": 0,
+            "expireBlockHeight": 0,
+            "banker": "0014c800033d5e94de5f22e23a6d3cbeaed87b55bd64",
+            "gas": 0.4
+        },
+        "testnet":{
+            "depositProgram": "20f39af759065598406ca988f0dd79af9175dd7adcbe019317a2d605578b1597ac1600147211ec12410ce8bd0d71cab0a29be3ea61c71eb103c8260203da240203da2402060080f420e6b50600407a10f35a2000d38a1c946e8cba1a69493240f281cd925002a43b81f516c4391b5fb2ffdacd4d4302597a64370200005479cda069c35b790400e1f5059600a05c797ba19a53795579a19a695a790400e1f5059653790400e1f505967800a07800a09a6955797b957c9600a069c35b797c9f9161645b010000005b79c2547951005e79895d79895c79895b7989597989587989537a894ca4587a64980000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c967600a069c3787c9f91616481000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696393000000005b795479515b79c16951c3c2515d79c16963a4000000557acd9f69577a577aae7cac890274787e008901c07ec169515b79c2515d79c16952c35c7994c251005d79895c79895b79895a79895979895879895779895679895579890274787e008901c07ec1696332020000005b79c2547951005e79895d79895c79895b7989597989587989537a894ca4587a64980000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c967600a069c3787c9f91616481000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696393000000005b795479515b79c16951c3c2515d79c16963a4000000557acd9f69577a577aae7cac890274787e008901c07ec16951c3c2515d79c1696343020000547acd9f69587a587aae7cac747800c0",
+            "profitProgram": "20f39af759065598406ca988f0dd79af9175dd7adcbe019317a2d605578b1597ac1600147211ec12410ce8bd0d71cab0a29be3ea61c71eb103c8260203da2402060080f420e6b50600407a10f35a20f855baf98778a892bad0371f5afca845191824dc8584585d566fbbc8ef1f304c4ca4587a64980000005479cd9f6959790400e1f5059653790400e1f505967800a07800a09a5c7956799f9a6955797b957c967600a069c3787c9f91616481000000005b795479515b79c1695178c2515d79c16952c3527994c251005d79895c79895b79895a79895979895879895779895679890274787e008901c07ec1696393000000005b795479515b79c16951c3c2515d79c16963a4000000557acd9f69577a577aae7cac747800c0",
+            "assetDeposited": "00d38a1c946e8cba1a69493240f281cd925002a43b81f516c4391b5fb2ffdacd",
+            "assetBill": "f855baf98778a892bad0371f5afca845191824dc8584585d566fbbc8ef1f304c",
+            "totalAmountBill": 100000000000000,
+            "totalAmountCapital": 200000000000000,
+            "dueBlockHeight": 140506,
+            "expireBlockHeight": 140506,
+            "banker": "00147211ec12410ce8bd0d71cab0a29be3ea61c71eb1",
+            "gas": 0.4
+        }
+    }
+    ```
 
-    以储蓄合约`FixedLimitCollect`为例，前端构造该合约的input和output的时候，需要通过具体的合约内容进行分析预判。
+- 2）插件调用
+    比原的`chrome`插件源码[Bytom-JS-SDK](https://github.com/Bytom/Bytom-JS-SDK),开发比原`DAPP`时调用插件的说明可以参考[Dapp Developer Guide](https://github.com/Bytom/Bystore/wiki/Dapp-Developer-Guide)
 
-    合约中`billAmount of billAsset`表示锁定的资产和数量，而`billAmount`、`billAsset`和`utxohash`都是储存在缓冲服务器的数据表里面，因此前端需要调用`list-utxo`查找与该资产`asset`和`program`相关的所有未花费的utxo。 
+- 3）前端预计算处理
 
-- 3）交易组成
+    以储蓄合约`FixedLimitCollect`为例，前端需要对该合约进行`verify`语句的预判断逻辑，以防用户输入参数之后执行失败。此外，合约中`billAmount of billAsset`表示锁定的资产和数量，而`billAmount`、`billAsset`和`utxohash`都是储存在缓冲服务器的数据表里面，因此前端需要调用`list-utxo`查找与该资产`asset`和`program`相关的所有未花费的utxo。 具体可以参考[`DAPP DEMO`前端案例](https://github.com/Bytom/Bytom-Dapp-Demo/tree/master/src)。
+
+- 4）交易组成
         
-    由于解锁合约是解锁`lock`语句条件，构造交易需要根据`lock`语句或`unlock`语句来变换。
+    比原的交易是多输入多输出的模板结构，如果合约中包含了多个`lock`或`unlock`语句，那么就需要用户构造多输入多输出的交易模板，同时，构造交易还需要根据`lock`语句或`unlock`语句来变换。交易构造具体可以参考[储蓄合约交易模型](https://github.com/Bytom/Bytom-Dapp-Demo/tree/master/src/components/layout/save)和[取现合约交易模型](https://github.com/Bytom/Bytom-Dapp-Demo/tree/master/src/components/layout/profit)的前端源代码。
 
   - 交易`input`结构如下：
 
-    `spendUTXOAction(utxohash)`表示花费的合约`utxo`，其中`utxohash`表示合约`UTXO`的`hash`，而`spendWalletAction(amount, Constant.assetDeposited)`表示用户输入的储蓄或取现的数量，而资产类型则由前端固定。
+    `spendUTXOAction(utxohash)`表示花费的合约`utxo`，其中`utxohash`表示合约`UTXO`的`hash`，而`spendWalletAction(amount, Constant.assetDeposited)`表示用户输入的储蓄或取现的数量（仅包含中需要资产交换的合约中），而资产类型则由前端固定。
 
     ```ecmascript 6
-
     export function spendUTXOAction(utxohash){
         return {
             "type": "spend_utxo",
@@ -227,19 +272,61 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
     }
     ```
 
+- 5）启动前端服务
+    编译前端命令如下：
+    ```bash
+    npm run build
+    ```
+
+    启动之前需要先启动`bufferserver`缓冲服务器，然后再启动前端服务，其前端启动命令如下：
+    ```bash
+    npm start
+    ```
+
 ### DAPP缓冲服务器
   
-缓冲服务器主要是为了在管理合约`UTXO`层面做一些效率方面的处理，包括了对`bycoin`服务器是如何同步请求的，此外对`DAPP`的相关交易记录也进行了存储。储蓄分红合约的架构说明如下：
+缓冲服务器主要是为了在管理合约`UTXO`层面做一些效率方面的处理，包括了对`bycoin`服务器是如何同步请求的，此外对`DAPP`的相关交易记录也进行了存储。具体可以参考一下[`bufferserver`源代码](https://github.com/oysheng/bufferserver)。
 
-- 1）缓冲服务器构成，目前设计了`3`张数据表：`base`、`utxo`和`balance`表。其中`base`表用于初始化该`DAPP`关注的合约`program`，即在查找`utxo`集合的时候，仅仅只需过滤出对应的`program`和资产即可; `utxo`表是该`DAPP`合约的`utxo`集合，其数据是从`bycoin`服务器中实时同步过来的，主要是为了提高`DAPP`的并发性; `balance`表是为了记录用户参与该合约的交易列表。
+- 1）储蓄分红合约的架构说明如下：
 
-- 2）后端服务由`API`进程和同步进程组成，其中`API`服务进程用于管理对外的用户请求，而同步进程包含了两个方面：一个是从`bycoin`服务器同步`utxo`，另一个是则是通过区块链浏览器查询交易状态
+  - 缓冲服务器构成，目前设计了`3`张数据表：`base`、`utxo`和`balance`表。其中`base`表用于初始化该`DAPP`关注的合约`program`，即在查找`utxo`集合的时候，仅仅只需过滤出对应的`program`和资产即可; `utxo`表是该`DAPP`合约的`utxo`集合，其数据是从`bycoin`服务器中实时同步过来的，主要是为了提高`DAPP`的并发性; `balance`表是为了记录用户参与该合约的交易列表。
 
-- 3）项目管理员调用`update-base`接口更新`DAPP`关注的合约`program`和`asset`。而`utxo`同步进程会根据`base`表的记录来定时扫描并更新本地的`utxo`表中的信息，并且根据超时时间定期解锁被锁定的`utxo`
+  - 后端服务由`API`进程和同步进程组成，其中`API`服务进程用于管理对外的用户请求，而同步进程包含了两个方面：一个是从`bycoin`服务器同步`utxo`，另一个是则是通过区块链浏览器查询交易状态
 
-- 4）用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。用户在前端在点击储蓄或取现按键的时候，会调用`utxo`最优匹配算法选择最佳的`utxo`，然后调用`update-utxo`接口对该`utxo`进行锁定，最后就用户就可以通过插件钱包调用`bycoin`服务器的构建交易接口来创建交易、签名交易和提交交易。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
+  - 项目管理员调用`update-base`接口更新`DAPP`关注的合约`program`和`asset`。而`utxo`同步进程会根据`base`表的记录来定时扫描并更新本地的`utxo`表中的信息，并且根据超时时间定期解锁被锁定的`utxo`
 
-- 5）用户发送交易成功后会生成两条`balance`记录表，默认状态是失败的，其中交易ID用于向区块链浏览器查询交易状态，如果交易成功则会更新`balance`的交易状态。此外，前端页面的`balance`列表表只显示交易成功的记录。
+  - 用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。用户在前端在点击储蓄或取现按键的时候，会调用`utxo`最优匹配算法选择最佳的`utxo`，然后调用`update-utxo`接口对该`utxo`进行锁定，最后就用户就可以通过插件钱包调用`bycoin`服务器的构建交易接口来创建交易、签名交易和提交交易。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
 
+  - 用户发送交易成功后会生成两条`balance`记录表，默认状态是失败的，其中交易ID用于向区块链浏览器查询交易状态，如果交易成功则会更新`balance`的交易状态。此外，前端页面的`balance`列表表只显示交易成功的记录。
 
+- 2）编译`bufferserver`源代码
+
+    按照[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)安装部署服务需要的软件包`Mysql`和`Redis`，然后下载源代码并编译：
+
+    ```sh
+    make all
+    ```
+
+    编译完成之后，在`target`目录下会生成可执行文件`api`和`updater`。
+
+- 3）启动服务
+    
+    使用`root`用户创建数据库和数据表，其命令如下：
+
+    ```sh
+    mysql -u root -p > database/dump.sql
+    ```
+
+    修改配置文件`config_local.json`，配置说明参考[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)。
+
+    启动`api`和`updater`服务器，其中`api`是提供`JSON RPC`请求的服务进程，`updater`是提供同步`blockcenter`和区块链浏览器数据请求的服务进程。
+
+    ```sh
+    ./target/api config_local.json
+
+    ./target/updater config_local.json
+    ```
+
+    
+    
     
