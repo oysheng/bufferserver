@@ -164,7 +164,11 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     
 储蓄分红合约前端逻辑处理流程大致如下：
 
-- 1）配置合约参数
+- 1）调用插件
+  
+    比原的`chrome`插件源码位于[Bytom-JS-SDK](https://github.com/Bytom/Bytom-JS-SDK)，开发比原`DAPP`时调用插件的说明可以参考[Dapp Developer Guide](https://github.com/Bytom/Bystore/wiki/Dapp-Developer-Guide)
+
+- 2）配置合约参数
 
     该`Dapp demo`中需要配置实例化的参数为`assetDeposited`、`totalAmountBill`、`totalAmountCapital`、`dueBlockHeight`、`expireBlockHeight`、`additionalBlockHeight`、`banker`、`bankerKey`。其前端配置文件为[`configure.json.js`](https://github.com/Bytom/Bytom-Dapp-Demo/blob/master/contracts/configure.json.js)
 
@@ -196,10 +200,6 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
         }
     }
     ```
-
-- 2）插件调用
-  
-    比原的`chrome`插件源码位于[Bytom-JS-SDK](https://github.com/Bytom/Bytom-JS-SDK)，开发比原`DAPP`时调用插件的说明可以参考[Dapp Developer Guide](https://github.com/Bytom/Bystore/wiki/Dapp-Developer-Guide)
 
 - 3）前端预计算处理
 
@@ -269,13 +269,14 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     ```
 
 - 5）启动前端服务
+  
     编译前端命令如下：
-    ```bash
+    ```sh
     npm run build
     ```
 
     启动之前需要先启动`bufferserver`缓冲服务器，然后再启动前端服务，其前端启动命令如下：
-    ```bash
+    ```sh
     npm start
     ```
 
@@ -313,7 +314,7 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     mysql -u root -p > database/dump.sql
     ```
 
-    修改配置文件`config_local.json`，配置说明参考[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)。
+    修改配置文件`config_local.json`，字段说明参考[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)的`config`配置参数详解。
 
     启动`api`和`updater`服务器，其中`api`是提供`JSON RPC`请求的服务进程，`updater`是提供同步`blockcenter`和区块链浏览器数据请求的服务进程。
 

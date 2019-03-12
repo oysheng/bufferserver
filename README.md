@@ -91,9 +91,7 @@ startup `api` and `updater` service with the target binaries.
 
 ```bash
 $ ./target/api config_local.json
-```
 
-```bash
 $ ./target/updater config_local.json
 ```
 
