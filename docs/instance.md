@@ -203,7 +203,8 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     ```
 
 - 2）插件调用
-    比原的`chrome`插件源码[Bytom-JS-SDK](https://github.com/Bytom/Bytom-JS-SDK),开发比原`DAPP`时调用插件的说明可以参考[Dapp Developer Guide](https://github.com/Bytom/Bystore/wiki/Dapp-Developer-Guide)
+  
+    比原的`chrome`插件源码位于[Bytom-JS-SDK](https://github.com/Bytom/Bytom-JS-SDK)，开发比原`DAPP`时调用插件的说明可以参考[Dapp Developer Guide](https://github.com/Bytom/Bystore/wiki/Dapp-Developer-Guide)
 
 - 3）前端预计算处理
 
