@@ -4,9 +4,7 @@ the bufferserver of bytom dapp.
 
 ## Requirements
 
-Building requires [Go](https://golang.org/doc/install) version 1.8 or higher, with `$GOPATH` set to your preferred directory.
-
-Furthermore, the version of [Mysql 5.7](https://www.mysql.com/) and the latest stable version of [Redis](https://redis.io/) are needed.
+Building requires [Go](https://golang.org/doc/install) version 1.8 or higher, with `$GOPATH` set to your preferred directory. Furthermore, the version of [Mysql 5.7](https://www.mysql.com/) and the latest stable version of [Redis](https://redis.io/) are needed.
 
 The target of building source code are the `api` and `updater` binaries. The `api` provide the RPC request and response service for users, and the `updater` provide the synchronization services for `blockcenter` and `browser`. The `blockcenter` is the decentralized wallet server for `bytom`, and the `browser` is the `bytom` blockchain browser for searching transaction.
 
@@ -14,11 +12,7 @@ The target of building source code are the `api` and `updater` binaries. The `ap
 $ make all
 ```
 
-then change directory to `target`, and you can find the binaries:
-
-```bash
-$ cd target
-```
+then change directory to `target`, and you can find the compiled results.
 
 ## Getting Started
 
