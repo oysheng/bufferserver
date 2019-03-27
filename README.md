@@ -78,13 +78,6 @@ the config file is `config_local.json`, these parameters can be changed accordin
 }
 ```
 
-Besides, the test blockcenter url is that:
-
-```
-solonet:  http://52.82.40.215:3000
-testnet:  http://52.82.40.215:3020
-```
-
 ### Startup service
 
 startup `api` and `updater` service with the target binaries.
