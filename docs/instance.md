@@ -315,7 +315,7 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     使用`root`用户创建数据库和数据表，其命令如下：
 
     ```sh
-    mysql -u root -p > database/dump.sql
+    mysql -u root -p < database/dump.sql
     ```
 
     修改配置文件`config_local.json`，字段说明参考[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)的`config`配置参数详解。

@@ -21,7 +21,7 @@ then change directory to `target`, and you can find the compiled results.
 `dump.sql` contain the SQL of creating database and tables.
 
 ```bash
-$ mysql -u root -p > database/dump.sql
+$ mysql -u root -p < database/dump.sql
 ```
 
 Enter the correct of `root` password that will create database and tables successfully.

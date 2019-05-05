@@ -175,7 +175,7 @@ contract contract_name(...) locks valueAmount of valueAsset {
     使用`root`用户创建数据库和数据表，其命令如下：
 
     ```sh
-    mysql -u root -p > database/dump.sql
+    mysql -u root -p < database/dump.sql
     ```
 
     修改配置文件`config_local.json`，配置说明参考[`README`](https://github.com/oysheng/bufferserver/blob/master/README.md)的`config`配置参数详解。
