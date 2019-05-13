@@ -79,7 +79,6 @@ func indirect(reflectValue reflect.Value) reflect.Value {
 func toQueryMarks(primaryValues [][]interface{}) string {
 	var results []string
 
-	primaryValues = distinctValues(primaryValues)
 	for _, primaryValue := range primaryValues {
 		var marks []string
 		for range primaryValue {
@@ -108,7 +107,6 @@ func toQueryCondition(scope *Scope, columns []string) string {
 }
 
 func toQueryValues(values [][]interface{}) (results []interface{}) {
-	values = distinctValues(values)
 	for _, value := range values {
 		for _, v := range value {
 			results = append(results, v)
@@ -225,19 +223,4 @@ func addExtraSpaceIfExist(str string) string {
 		return " " + str
 	}
 	return ""
-}
-
-func distinctValues(values [][]interface{}) [][]interface{} {
-	var results [][]interface{}
-	keyMap := make(map[string]interface{})
-	for _, value := range values {
-		for _, val := range value {
-			keyMap[fmt.Sprintf("%v", val)] = val
-		}
-	}
-	
-	for _, val := range keyMap {
-		results = append(results, []interface{}{val})
-	}
-	return results
 }
