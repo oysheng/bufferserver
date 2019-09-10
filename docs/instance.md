@@ -146,7 +146,7 @@ bankerKey               :055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aed
 
 合约交易成功后，合约`control_program`对应的`UTXO`将会被所有用户查询到，使用比原链的接口[`list-unspent-outputs`](https://github.com/Bytom/bytom/wiki/API-Reference#list-unspent-outputs)即可查询。
 
-此外，开发者需要存储一下合约`UTXO`的`assetID`和`program`，以便在`DAPP`的前端页面的`config`配置文件和`bufferserver`缓冲服务器中调用。如上所示：
+此外，开发者需要存储一下合约`UTXO`的`assetID`和`program`，以便在`DAPP`的前端页面的`config`配置文件和`DAPP`后端中调用。如上所示：
 
 ```
 // 储蓄合约
@@ -207,7 +207,7 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
 
 - 3）前端预计算处理
 
-    以储蓄合约`FixedLimitCollect`为例，前端需要对该合约进行`verify`语句的预判断逻辑，以防用户输入参数之后执行失败。此外，合约中`billAmount of billAsset`表示锁定的资产和数量，而`billAmount`、`billAsset`和`utxohash`都是储存在缓冲服务器的数据表里面，因此前端需要调用`list-utxo`查找与该资产`asset`和`program`相关的所有未花费的utxo。 具体可以参考[`DAPP DEMO`前端案例](https://github.com/Bytom/Bytom-Dapp-Demo/tree/master/src)。
+    以储蓄合约`FixedLimitCollect`为例，前端需要对该合约进行`verify`语句的预判断逻辑，以防用户输入参数之后执行失败。此外，合约中`billAmount of billAsset`表示锁定的资产和数量，而`billAmount`、`billAsset`和`utxohash`都是储存在`DAPP`后端的数据表里面，因此前端需要调用`list-utxo`查找与该资产`asset`和`program`相关的所有未花费的utxo。 具体可以参考[`DAPP DEMO`前端案例](https://github.com/Bytom/Bytom-Dapp-Demo/tree/master/src)。
 
 - 4）交易组成
         
@@ -279,24 +279,24 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
     npm run build
     ```
 
-    启动之前需要先启动`bufferserver`缓冲服务器，然后再启动前端服务，其前端启动命令如下：
+    启动之前需要先启动`DAPP`后端服务器，然后再启动前端服务，其前端启动命令如下：
     ```sh
     npm start
     ```
 
-### DAPP缓冲服务器
+### DAPP后端
   
-缓冲服务器主要是为了在管理合约`UTXO`层面做一些效率方面的处理，包括了对`bycoin`服务器是如何同步请求的，此外对`DAPP`的相关交易记录也进行了存储。具体可以参考一下[`bufferserver`源代码](https://github.com/oysheng/bufferserver)。
+`DAPP`后端根据储蓄分红合约实现对应的业务应用，同时提供给前端调用的应用服务接口，并且实时同步合约交易和`UTXO`等状态信息。此外，它在管理合约`UTXO`层面做了一些效率方面的处理，同时对`DAPP`的相关交易记录也进行了存储。具体可以参考一下[`bufferserver`源代码](https://github.com/oysheng/bufferserver)。
 
 - 1）储蓄分红合约的架构说明如下：
 
-  - 缓冲服务器构成，目前设计了`3`张数据表：`base`、`utxo`和`balance`表。其中`base`表用于初始化该`DAPP`关注的合约`program`，即在查找`utxo`集合的时候，仅仅只需过滤出对应的`program`和资产即可; `utxo`表是该`DAPP`合约的`utxo`集合，其数据是从`bycoin`服务器中实时同步过来的，主要是为了提高`DAPP`的并发性; `balance`表是为了记录用户参与该合约的交易列表。
+  - `DAPP`后端设计了`3`张关系型数据表：`base`、`utxo`和`balance`表。其中`base`表用于初始化该`DAPP`关注的合约`program`，即在查找`utxo`集合的时候，仅仅只需过滤出对应的`program`和资产即可; `utxo`表是该`DAPP`合约的`utxo`集合，其数据是从`blockcenter`服务器中实时同步过来的，主要是为了提高`DAPP`的并发性; `balance`表是为了记录用户参与该合约的交易列表。
 
-  - 后端服务由`API`进程和同步进程组成，其中`API`服务进程用于管理对外的用户请求，而同步进程包含了两个方面：一个是从`bycoin`服务器同步`utxo`，另一个是则是通过区块链浏览器查询交易状态
+  - 后端由`API`服务和同步服务两个进程组成，其中`API`服务进程用于响应前端的`RPC`请求，而同步进程包含了两个方面：一个是从`blockcenter`服务器同步`utxo`，另一个是则是通过区块链浏览器查询交易状态
 
   - 项目管理员调用`update-base`接口更新`DAPP`关注的合约`program`和`asset`。而`utxo`同步进程会根据`base`表的记录来定时扫描并更新本地的`utxo`表中的信息，并且根据超时时间定期解锁被锁定的`utxo`
 
-  - 用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。用户在前端在点击储蓄或取现按键的时候，会调用`utxo`最优匹配算法选择最佳的`utxo`，然后调用`update-utxo`接口对该`utxo`进行锁定，最后就用户就可以通过插件钱包调用`bycoin`服务器的构建交易接口来创建交易、签名交易和提交交易。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
+  - 用户在调用储蓄或取现之前需要查询合约的`utxo`是否可用，可用的`utxo`集合中包含了未确认的`utxo`。用户在前端在点击储蓄或取现按键的时候，会调用`utxo`最优匹配算法选择最佳的`utxo`，然后调用`update-utxo`接口对该`utxo`进行锁定，最后就用户就可以通过插件钱包调用`blockcenter`服务器的构建交易接口来创建交易、签名交易和提交交易。倘若所有合约`utxo`都被锁定了，则会缩短第一个`utxo`的锁定时间为`60s`，设置该时间间隔是为了保证未确认的交易被成功验证并生成未确认的`utxo`。如果该时间间隔并没有产生新的`utxo`，则认为前面一个用户并没有产生交易，则`60s`后可以再次花费该`utxo`。
 
   - 用户发送交易成功后会生成两条`balance`记录表，默认状态是失败的，其中交易ID用于向区块链浏览器查询交易状态，如果交易成功则会更新`balance`的交易状态。此外，前端页面的`balance`列表表只显示交易成功的记录。
 
@@ -327,6 +327,8 @@ program：20055539eb36abcaaf127c63ae20e3d049cd28d0f1fe569df84da3aedb018ca1bf1600
 
     ./target/updater config_local.json
     ```
+
+    附：`DAPP`后端的`JSON RPC`接口可以参考[`API`接口说明](https://github.com/oysheng/bufferserver/wiki)。
 
     
     
