@@ -38,6 +38,17 @@ func (b *blockCenterKeeper) Run() {
 }
 
 func (b *blockCenterKeeper) syncBlockCenter() error {
+	if err := b.syncUTXO(); err != nil {
+		return err
+	}
+
+	if err := b.syncTransaction(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *blockCenterKeeper) syncUTXO() error {
 	var bases []*orm.Base
 	if err := b.db.Find(&bases).Error; err != nil {
 		return errors.Wrap(err, "query bases")
@@ -143,5 +154,42 @@ func (b *blockCenterKeeper) delIrrelevantUTXO() error {
 		}
 	}
 
+	return nil
+}
+
+func (b *blockCenterKeeper) syncTransaction() error {
+	var balances []*orm.Balance
+	if err := b.db.Model(&orm.Balance{}).Where("status_fail = false").Where("is_confirmed = false").Find(&balances).Error; err != nil {
+		return errors.Wrap(err, "query balances")
+	}
+
+	expireTime := time.Duration(600)
+	for _, balance := range balances {
+		if balance.TxID == "" {
+			if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
+				return errors.Wrap(err, "delete without TxID balance record")
+			}
+			continue
+		}
+
+		res, err := b.service.GetTransaction(&service.GetTransactionReq{TxID: balance.TxID})
+		if err != nil {
+			log.WithField("err", err).Errorf("fail on query transaction [%s] from blockcenter", balance.TxID)
+			continue
+		}
+
+		if res.BlockHeight == 0 {
+			if time.Now().Unix()-balance.CreatedAt.Unix() > int64(expireTime) {
+				if err := b.db.Delete(&orm.Balance{ID: balance.ID}).Error; err != nil {
+					return errors.Wrap(err, "delete expiration balance record")
+				}
+			}
+			continue
+		}
+
+		if err := b.db.Model(&orm.Balance{}).Where(&orm.Balance{ID: balance.ID}).Update("status_fail", res.StatusFail).Update("is_confirmed", true).Error; err != nil {
+			return errors.Wrap(err, "update balance")
+		}
+	}
 	return nil
 }

@@ -68,11 +68,6 @@ the config file is `config_local.json`, these parameters can be changed accordin
         "max_open_conns": 5,    // the max open connects
         "max_idle_conns": 5     // the max idle connects
       }
-    },
-    "browser": {
-      "sync_seconds": 60,                       // the synchronization interval
-      "expiration_hours": 24,                   // the expiration time of hours
-      "url": "https://blockmeta.com/api/wisdom" // the url of browser server
     }
   }
 }

@@ -18,7 +18,6 @@ func main() {
 	}
 
 	go synchron.NewBlockCenterKeeper(cfg, db.Master()).Run()
-	go synchron.NewBrowserKeeper(cfg, db.Master()).Run()
 
 	// keep the main func running in case of terminating goroutines
 	var wg sync.WaitGroup

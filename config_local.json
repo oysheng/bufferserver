@@ -35,11 +35,6 @@
         "max_open_conns": 5,
         "max_idle_conns": 5
       }
-    },
-    "browser": {
-      "sync_seconds": 60,
-      "expiration_hours": 24,
-      "url": "https://blockmeta.com/api/wisdom"
     }
   }
 }

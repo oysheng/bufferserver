@@ -2,6 +2,8 @@ package service
 
 import (
 	"encoding/json"
+
+	"github.com/bufferserver/types"
 	"github.com/bytom/errors"
 
 	"github.com/bufferserver/api/common"
@@ -68,16 +70,30 @@ func (s *Service) request(path string, payload []byte) (interface{}, error) {
 	return resp.Result["data"], nil
 }
 
-type TransactionStatusResp struct {
-	Height     int64 `json:"height"`
-	StatusFail bool  `json:"status_fail"`
+type GetTransactionReq struct {
+	TxID string `json:"tx_id"`
 }
 
-func (s *Service) GetTransactionStatus(TxID string) (*TransactionStatusResp, error) {
-	url := s.url + "/transaction/" + TxID
-	var resp TransactionStatusResp
-	if err := util.Get(url, &resp); err != nil {
+func (s *Service) GetTransaction(req *GetTransactionReq) (*types.Tx, error) {
+	urlPath := "/api/v1/btm/merchant/get-transaction"
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "json marshal")
+	}
+
+	resp, err := s.request(urlPath, payload)
+	if err != nil {
 		return nil, err
 	}
-	return &resp, nil
+
+	data, err := json.Marshal(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var res *types.Tx
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
